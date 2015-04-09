@@ -14,7 +14,6 @@ public class InformationRetrieval {
 			HashMap<Integer, ArrayList<Integer>> docsCitazioni = Documento.parserCitazioni("./data/documenti.xml");
 			System.out.println("Fine");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
