@@ -6,7 +6,8 @@ import java.util.Set;
 import java.lang.Math;
 
 public class Formula {
-	private double kTitolo;
+	//private double kTitolo;
+	//private HashMap<Integer, Documento> docs;
 
 	// private int tfdif;
 	// private int kStem;
@@ -15,12 +16,12 @@ public class Formula {
 
 	// ANCORA DA FINIRE
 	public Formula() {
-
+		//docs = _docs;
 	}
 
 	private double pesoTitolo(Documento doc, String keyword) {
 		String titolo = doc.mioTitolo();
-
+		double kTitolo;
 		// Evito di confrontare "Parola" con "parola" e dedurre che sono
 		// diverse
 		titolo = titolo.toLowerCase();
@@ -38,6 +39,23 @@ public class Formula {
 		return kTitolo;
 	}
 
+	private double pesoTfidf(Documento doc, String key, HashMap<Integer, Documento> Docs){
+		double frequenzaKeyword = doc.getFrequenzaKeyword(key);
+		double numeroTotaleDocumenti = Docs.size();
+		double numDocConKeyword=0;
+		
+		Set<Integer> docsid = Docs.keySet();
+		for (Integer docid : docsid) {
+			if (Docs.get(docid).mieKeyword().containsKey(key)){
+				numDocConKeyword++;
+			}
+		}
+		double tfidf;
+		tfidf = frequenzaKeyword * Math.log(numeroTotaleDocumenti / numDocConKeyword);
+		return tfidf;
+	}
+	
+	
 	// Formula per calcolare il peso dello stem per una keyword
 	private double pesoStemKeyword(Documento doc, String key) {
 		int numStemKeyword = doc.getNumStemKeyword(key);
@@ -106,7 +124,7 @@ public class Formula {
 			for (String key : keys) {
 				// Calcolo i diversi coefficienti
 				titolo = pesoTitolo(documento, key);
-				tfidf = 0; // TODO: aggiungere metodo
+				tfidf = pesoTfidf(documento, key, docs); // TODO: aggiungere metodo
 				kstem = pesoStemKeyword(documento, key);
 				kcitazioni = pesoCitazioni(docs, documento, key);
 
