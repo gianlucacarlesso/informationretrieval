@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 
 public class InformationRetrieval {
@@ -14,11 +15,17 @@ public class InformationRetrieval {
 		    // UtilsIR.reformatXML("./data/docid.documento.xml", "./data/documenti.xml");
 			HashMap<Integer, ArrayList<Integer>> docsCitazioni = Parser.parserCitazioni("./data/documenti.xml");
 			
-			// una prova di costruzione di un documento; alla fine lo faremo per ogni id. Notare che ho usato per gli stem lo stesso metodo 
-			// delle parole chiave, solo per velocita' in queste prove.
-			Documento prova = new Documento(2, docsTitolo.get(2), docsKeyWords.get(2), docsStems.get(2), docsCitazioni.get(2));
-			Formula ff = new Formula(0);
-			ff.pesoTitolo(prova);
+			// Creo un arraylist con tutti i documenti della collezione
+			HashMap<Integer, Documento> docs = new HashMap<Integer, Documento>();
+			Set<Integer> docsid = docsTitolo.keySet();
+			for(int k: docsid) {
+				if(k==20 || k==5) { // Solo per debug
+				Documento doc = new Documento(k, docsTitolo.get(k), docsKeyWords.get(k), docsStems.get(k), docsCitazioni.get(k));
+				docs.put(k, doc);
+				}
+			}
+			Formula ff = new Formula();
+			ff.calcolaFormula(docs);
 			
 			System.out.println("Fine");
 		} catch (IOException e) {

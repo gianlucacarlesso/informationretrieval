@@ -3,7 +3,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -16,9 +15,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class Parser {
-	private HashMap<String, Integer> keywords;
-	private HashMap<String, Integer> stems;
-	private ArrayList<Integer> citazioni;
 
 	public static HashMap<Integer, String> parserDocumentoTitolo(
 			String pathDocumento) throws IOException {

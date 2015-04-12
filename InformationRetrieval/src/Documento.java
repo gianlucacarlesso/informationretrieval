@@ -41,14 +41,44 @@ public class Documento {
 
 	public String getStemKeyWords(String key) {
 		Set<String> kstems = stems.keySet();
-		String stem = "";
+		String stem = null;
+		
 		// Ci sarà UN solo stem che è anche prefisso di una keywords
-		for(String k: kstems) {
-			if(key.startsWith(k)) {
-				stem = k;
+		// Se non trovo uno stem, probabilmente la radice ha subito una modifica (y -> i)
+		while(stem == null) {
+			int differenza = 0;
+			key = key.subSequence(0, key.length() - differenza).toString();
+			for(String k: kstems) {
+				k = k.subSequence(0, k.length() - differenza).toString();
+				if(key.startsWith(k)) {
+					stem = k;
+				}
 			}
-		}
+			
+			differenza++;
+		}		
 		
 		return stem;
+	}
+	
+	// Ritorna il numero di stem presenti di una keyword
+	public int getNumStemKeyword(String key) {
+		return stems.get(getStemKeyWords(key));
+	}
+	
+	// Ritorna la frequenza di una keyword
+	public int getFrequenzaKeyword(String key) {
+		return keywords.get(key);
+	}
+	
+	// Ritorna il totale delle frequenze delle keywords
+	public int getNumFreqKeywordsTotali() {
+		Set<String> keys = keywords.keySet();
+		int tot = 0;
+		for(String k: keys) {
+			tot += keywords.get(k);
+		}
+		
+		return tot;
 	}
 }
