@@ -38,6 +38,7 @@ public class Formula {
 		return kTitolo;
 	}
 
+	// Formula per calcolare il peso dello stem per una keyword
 	private double pesoStemKeyword(Documento doc, String key) {
 		int numStemKeyword = doc.getNumStemKeyword(key);
 		int frequenzaKeyword = doc.getFrequenzaKeyword(key);
@@ -48,6 +49,7 @@ public class Formula {
 		return kstem;
 	}
 
+	// Conto i documenti citati che contengono la keyword
 	private int numeroDocCitatiConKeywords(HashMap<Integer, Documento> docs,
 			Documento doc, String key) {
 		ArrayList<Integer> citazioni = doc.mieCitazioni();
@@ -57,6 +59,7 @@ public class Formula {
 		for (int i = 0; i < citazioni.size(); i++) {
 			docTmp = docs.get(citazioni.get(i));
 
+			// Se la keyword non è presente nel documento citato, se cerco di recuperarla ottengo null
 			Object valore = docTmp.mieKeyword().get(key);
 			if (valore != null) {
 				numeroDocsCitati++;
@@ -66,6 +69,7 @@ public class Formula {
 		return numeroDocsCitati;
 	}
 
+	// Calcolo il peso delle citazioni
 	private double pesoCitazioni(HashMap<Integer, Documento> docs,
 			Documento doc, String key) {
 		int numeroDocumentiCitati = doc.mieCitazioni().size();
@@ -77,7 +81,7 @@ public class Formula {
 	}
 
 	public HashMap<Integer, HashMap<String, Double>> calcolaFormula(
-			HashMap<Integer, Documento> docs) throws IOException {
+			HashMap<Integer, Documento> docs, String path) throws IOException {
 		
 		double titolo, tfidf, kstem, kcitazioni = 0;
 		HashMap<Integer, HashMap<String, Double>> pesi = new HashMap<Integer, HashMap<String, Double>>();
@@ -107,7 +111,7 @@ public class Formula {
 		}
 
 		// salvo i pesi in un file
-		scriviPesi("./data/pesi.txt", pesi);
+		scriviPesi(path, pesi);
 		return pesi;
 	}
 

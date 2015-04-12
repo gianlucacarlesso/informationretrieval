@@ -25,7 +25,7 @@ public class InformationRetrieval {
 				}
 			}
 			Formula ff = new Formula();
-			ff.calcolaFormula(docs);
+			ff.calcolaFormula(docs, "./data/pesi.txt");
 			
 			System.out.println("Fine");
 		} catch (IOException e) {
