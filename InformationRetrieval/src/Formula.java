@@ -94,12 +94,12 @@ public class Formula {
 
 			pesi.put(docid, new HashMap<String, Double>());
 
-			// Procedo per ogni keywords
+			// Procedo per ogni keywords di un documento
 			Set<String> keys = documento.mieKeyword().keySet();
 			for (String key : keys) {
 				// Calcolo i diversi coefficienti
 				titolo = pesoTitolo(documento, key);
-				tfidf = 0;
+				tfidf = 0; // TODO: aggiungere metodo
 				kstem = pesoStemKeyword(documento, key);
 				kcitazioni = pesoCitazioni(docs, documento, key);
 
