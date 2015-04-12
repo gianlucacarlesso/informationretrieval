@@ -16,7 +16,7 @@ public class InformationRetrieval {
 			
 			// una prova di costruzione di un documento; alla fine lo faremo per ogni id. Notare che ho usato per gli stem lo stesso metodo 
 			// delle parole chiave, solo per velocita' in queste prove.
-			Documento prova = new Documento(2, docsTitolo.get(2), docsKeyWords.get(2), docsKeyWords.get(2), docsCitazioni.get(2));
+			Documento prova = new Documento(2, docsTitolo.get(2), docsKeyWords.get(2), docsStems.get(2), docsCitazioni.get(2));
 			Formula ff = new Formula(0);
 			ff.pesoTitolo(prova);
 			

@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 public class Documento {
 	private int id;
@@ -38,5 +39,16 @@ public class Documento {
 		return citazioni;
 	}
 
-
+	public String getStemKeyWords(String key) {
+		Set<String> kstems = stems.keySet();
+		String stem = "";
+		// Ci sarà UN solo stem che è anche prefisso di una keywords
+		for(String k: kstems) {
+			if(key.startsWith(k)) {
+				stem = k;
+			}
+		}
+		
+		return stem;
+	}
 }
