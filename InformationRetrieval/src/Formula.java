@@ -44,7 +44,7 @@ public class Formula {
 		int frequenzaKeyword = doc.getFrequenzaKeyword(key);
 		int numFreqKeywordsTotali = doc.getNumFreqKeywordsTotali();
 
-		double kstem = (numStemKeyword - frequenzaKeyword)
+		double kstem = (numStemKeyword - frequenzaKeyword) * 1.0
 				/ numFreqKeywordsTotali;
 		return kstem;
 	}
@@ -74,8 +74,15 @@ public class Formula {
 			Documento doc, String key) {
 		int numeroDocumentiCitati = doc.mieCitazioni().size();
 		int numDocCitatiConKeywords = numeroDocCitatiConKeywords(docs, doc, key);
+		
+		// Se non ci sono citazioni con keywords
+		if(numDocCitatiConKeywords == 0) {
+			numeroDocumentiCitati = 1;
+			numDocCitatiConKeywords = 1;
+		}
+		
 		double valore = doc.getFrequenzaKeyword(key)
-				* Math.log(numeroDocumentiCitati / numDocCitatiConKeywords);
+				* Math.log(1.0 * numeroDocumentiCitati / numDocCitatiConKeywords);
 
 		return valore;
 	}

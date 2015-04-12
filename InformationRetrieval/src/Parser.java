@@ -97,8 +97,7 @@ public class Parser {
 							// System.out.println(token[j]);
 							Integer idCitazione = new Integer(token[j].trim());
 
-							if (docid != idCitazione
-									&& !citazioni.contains(idCitazione)) {
+							if (docid.compareTo(idCitazione) != 0 && !citazioni.contains(idCitazione)) {
 								citazioni.add(idCitazione);
 							}
 						}

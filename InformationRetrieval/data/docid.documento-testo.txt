@@ -17,7 +17,7 @@
 17	 On Programming of Arithmetic Operations
 18	 Simple Automatic Coding Systems
 19	 Glossary of Computer Engineering and Programming Terminology
-20	 Accelerating Convergence of Iterative Processes	 A technique is discussed which when applied to an iterative procedure for the solution of an equation accelerates the rate of convergence if the iteration converges and induces convergence if the iteration diverges. An illustrative example is given.
+20	 Accelerating Convergence of Iterative ProcessesA technique is discussed which when applied to an iterative procedure for the solution of an equation accelerates the rate of convergence if the iteration converges and induces convergence if the iteration diverges. An illustrative example is given.
 21	 Algebraic Formulation of Flow Diagrams
 22	 Unusual Applications Department--Automatic Implementation of Computer Logic
 23	 Binary and Truth-Function Operations on a Decimal Computer with an Extract Command
