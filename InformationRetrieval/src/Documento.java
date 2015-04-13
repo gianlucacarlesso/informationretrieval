@@ -47,7 +47,6 @@ public class Documento {
 		// Se non trovo uno stem, probabilmente la radice ha subito una modifica (y -> i)
 		int differenza = 0;
 		while(stem == null) {
-			key = key.subSequence(0, key.length() - differenza).toString();
 			for(String k: kstems) {
 				String t = k.subSequence(0, k.length() - differenza).toString();
 				if(key.startsWith(t)) {
@@ -64,7 +63,7 @@ public class Documento {
 		return stems.get(getStemKeyWords(key));
 	}
 	
-	// Ritorna la frequenza di una keyword
+	// Ritorna la frequenza di una keyword4
 	public int getFrequenzaKeyword(String key) {
 		return keywords.get(key);
 	}
