@@ -19,10 +19,10 @@ public class InformationRetrieval {
 			HashMap<Integer, Documento> docs = new HashMap<Integer, Documento>();
 			Set<Integer> docsid = docsTitolo.keySet();
 			for(int k: docsid) {
-				if(k==20 || k==5) { // Solo per debug
+				//if(k==1) { // Solo per debug
 				Documento doc = new Documento(k, docsTitolo.get(k), docsKeyWords.get(k), docsStems.get(k), docsCitazioni.get(k));
 				docs.put(k, doc);
-				}
+				//}
 			}
 			Formula ff = new Formula();
 			ff.calcolaFormula(docs, "./data/pesi.txt");

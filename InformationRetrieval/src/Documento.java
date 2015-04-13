@@ -45,19 +45,17 @@ public class Documento {
 		
 		// Ci sarà UN solo stem che è anche prefisso di una keywords
 		// Se non trovo uno stem, probabilmente la radice ha subito una modifica (y -> i)
+		int differenza = 0;
 		while(stem == null) {
-			int differenza = 0;
 			key = key.subSequence(0, key.length() - differenza).toString();
 			for(String k: kstems) {
-				k = k.subSequence(0, k.length() - differenza).toString();
-				if(key.startsWith(k)) {
+				String t = k.subSequence(0, k.length() - differenza).toString();
+				if(key.startsWith(t)) {
 					stem = k;
 				}
-			}
-			
+			}	
 			differenza++;
 		}		
-		
 		return stem;
 	}
 	

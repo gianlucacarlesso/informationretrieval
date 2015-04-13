@@ -116,23 +116,24 @@ public class Formula {
 		// Calcola la formula per ogni documento
 		for (Integer docid : docsid) {
 			documento = docs.get(docid);
-
 			pesi.put(docid, new HashMap<String, Double>());
 
 			// Procedo per ogni keywords di un documento
 			Set<String> keys = documento.mieKeyword().keySet();
 			for (String key : keys) {
+				
 				// Calcolo i diversi coefficienti
-				titolo = pesoTitolo(documento, key);
-				tfidf = pesoTfidf(documento, key, docs); // TODO: aggiungere metodo
+				titolo = pesoTitolo(documento, key);	
+				tfidf = pesoTfidf(documento, key, docs); // TODO: aggiungere metodo	
 				kstem = pesoStemKeyword(documento, key);
 				kcitazioni = pesoCitazioni(docs, documento, key);
 
 				double peso = titolo + tfidf + kstem + kcitazioni;
 
 				pesi.get(docid).put(key, peso);
+				
 			}
-
+			
 		}
 
 		// salvo i pesi in un file
