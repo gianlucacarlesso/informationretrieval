@@ -39,20 +39,25 @@ public class Formula {
 		return kTitolo;
 	}
 	
-	private double pesoAbstract(Documento doc, String key, HashMap<Integer, Documento> Docs){
-		double frequenzaKeyword = doc.getFrequenzaKeyword(key);
-		double numeroTotaleDocumenti = Docs.size();
-		double numDocConKeyword=0;
+	private double pesoAbstract(Documento doc, String key){
+		String sabstract = doc.mioAbstract();
+		sabstract = sabstract.toLowerCase();
+		double tfidfAbstract;
 		
-		Set<Integer> docsid = Docs.keySet();
-		for (Integer docid : docsid) {
-			if (Docs.get(docid).mieKeyword().containsKey(key)){
-				numDocConKeyword++;
-			}
+		if (sabstract.contains(key)){
+			double frequenzaKeywordInAbstract = doc.getFrequenzaKeywordAbstract(key);
+			double numTotaleKeywordsInAbstract=doc.getNumFreqKeywordsAbstractTotale();
+			tfidfAbstract = frequenzaKeywordInAbstract/numTotaleKeywordsInAbstract;
+		} else if (sabstract.contains(doc.getStemKeyWords(key).toLowerCase())){
+			String keyAbstractStem = doc.getStemKeyWords(key).toLowerCase();
+			double frequenzaKeywordInAbstract = doc.getFrequenzaKeywordAbstract(keyAbstractStem);
+			double numTotaleKeywordsInAbstract=doc.getNumFreqKeywordsAbstractTotale();
+			tfidfAbstract = frequenzaKeywordInAbstract/numTotaleKeywordsInAbstract * 0.5;
+		} else {
+			tfidfAbstract = 0;
 		}
-		double tfidf;
-		tfidf = frequenzaKeyword * Math.log(numeroTotaleDocumenti / numDocConKeyword);
-		return tfidf;
+	
+		return tfidfAbstract;
 	}
 
 	private double pesoTfidf(Documento doc, String key, HashMap<Integer, Documento> Docs){
@@ -140,8 +145,8 @@ public class Formula {
 				
 				// Calcolo i diversi coefficienti
 				titolo = pesoTitolo(documento, key);	
-				tfidf = pesoTfidf(documento, key, docs); // TODO: aggiungere metodo	
-				tfidfAbstract = pesoAbstract(documento, key, docs);
+				tfidf = pesoTfidf(documento, key, docs); 
+				tfidfAbstract = pesoAbstract(documento, key);
 				kstem = pesoStemKeyword(documento, key);
 				kcitazioni = pesoCitazioni(docs, documento, key);
 
