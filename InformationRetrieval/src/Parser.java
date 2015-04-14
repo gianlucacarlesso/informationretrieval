@@ -56,10 +56,9 @@ public class Parser {
 		return docsKeyWords;
 	}
 
-	public static HashMap<Integer, ArrayList<Integer>> parserCitazioni(
-			String pathDocumento) {
+	public static HashMap<Integer, ArrayList<Integer>> parserDocumenti(
+			String pathDocumento, HashMap<Integer, ArrayList<Integer>> docsCitazioni, HashMap<Integer, String> docsTitolo, HashMap<Integer, String> docsAbstract) {
 
-		HashMap<Integer, ArrayList<Integer>> docsCitazioni = new HashMap<Integer, ArrayList<Integer>>();
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		try {
 
@@ -87,6 +86,21 @@ public class Parser {
 
 						// System.out.println(docid);
 
+						// Recupero titolo
+						String title = eElement.getElementsByTagName("TITLE")
+								.item(0).getTextContent().trim();
+						docsTitolo.put(docid, title);
+						
+						// Recupero abstract
+						
+						Node abstrac = eElement.getElementsByTagName("ABSTRACT").item(0);
+						String sabstract = "";
+						if(abstrac != null) {
+								sabstract = abstrac.getTextContent().trim();
+						}
+						docsAbstract.put(docid, sabstract);
+						
+						// Recupero le citazioni
 						sCitazioni = eElement.getElementsByTagName("CITATIONS")
 								.item(0).getTextContent();
 						ArrayList<Integer> citazioni = new ArrayList<Integer>();

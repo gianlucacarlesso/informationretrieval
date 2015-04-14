@@ -5,15 +5,17 @@ import java.util.Set;
 public class Documento {
 	private int id;
 	private String titolo;
+	private String sabstract;
 	private HashMap<String, Integer> keywords;
 	private HashMap<String, Integer> stems;
 	private ArrayList<Integer> citazioni;
 
-	public Documento(int _id, String _titolo,
+	public Documento(int _id, String _titolo, String _sabstract,
 			HashMap<String, Integer> _keywords,
 			HashMap<String, Integer> _stems, ArrayList<Integer> _citazioni) {
 		id = _id;
 		titolo = _titolo;
+		sabstract = _sabstract;
 		keywords = _keywords;
 		stems = _stems;
 		citazioni = _citazioni;
@@ -21,6 +23,10 @@ public class Documento {
 	
 	public String mioTitolo(){
 		return titolo;
+	}
+	
+	public String mioAbstract() {
+		return sabstract;
 	}
 	
 	public int mioId(){
@@ -77,5 +83,20 @@ public class Documento {
 		}
 		
 		return tot;
+	}
+	
+	// Calcolo il numero totale di parole chiave presenti nell'abstract
+	public int getNumFreqKeywordsAbstractTotale() {
+		Set<String> keys = keywords.keySet();
+		int tot = 0;
+		for(String k: keys) {
+			tot += sabstract.split(k).length - 1;
+		}
+		
+		return tot;
+	}
+	
+	public int getFrequenzaKeywordAbstract(String key) {
+		return sabstract.split(key).length - 1;
 	}
 }

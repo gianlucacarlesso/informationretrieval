@@ -38,6 +38,22 @@ public class Formula {
 
 		return kTitolo;
 	}
+	
+	private double pesoAbstract(Documento doc, String key, HashMap<Integer, Documento> Docs){
+		double frequenzaKeyword = doc.getFrequenzaKeyword(key);
+		double numeroTotaleDocumenti = Docs.size();
+		double numDocConKeyword=0;
+		
+		Set<Integer> docsid = Docs.keySet();
+		for (Integer docid : docsid) {
+			if (Docs.get(docid).mieKeyword().containsKey(key)){
+				numDocConKeyword++;
+			}
+		}
+		double tfidf;
+		tfidf = frequenzaKeyword * Math.log(numeroTotaleDocumenti / numDocConKeyword);
+		return tfidf;
+	}
 
 	private double pesoTfidf(Documento doc, String key, HashMap<Integer, Documento> Docs){
 		double frequenzaKeyword = doc.getFrequenzaKeyword(key);
@@ -108,7 +124,7 @@ public class Formula {
 	public HashMap<Integer, HashMap<String, Double>> calcolaFormula(
 			HashMap<Integer, Documento> docs, String path) throws IOException {
 		
-		double titolo, tfidf, kstem, kcitazioni = 0;
+		double titolo, tfidfAbstract, tfidf, kstem, kcitazioni = 0;
 		HashMap<Integer, HashMap<String, Double>> pesi = new HashMap<Integer, HashMap<String, Double>>();
 
 		Set<Integer> docsid = docs.keySet();
@@ -125,10 +141,11 @@ public class Formula {
 				// Calcolo i diversi coefficienti
 				titolo = pesoTitolo(documento, key);	
 				tfidf = pesoTfidf(documento, key, docs); // TODO: aggiungere metodo	
+				tfidfAbstract = pesoAbstract(documento, key, docs);
 				kstem = pesoStemKeyword(documento, key);
 				kcitazioni = pesoCitazioni(docs, documento, key);
 
-				double peso = titolo + tfidf + kstem + kcitazioni;
+				double peso = titolo + tfidf + tfidfAbstract + kstem + kcitazioni;
 
 				pesi.get(docid).put(key, peso);
 				
