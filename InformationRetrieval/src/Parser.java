@@ -160,4 +160,30 @@ public class Parser {
 
 			return queryKeyWords;
 	}
+	
+	public static HashMap<Integer, ArrayList<String>> parserQueryStem(
+			String pathDocumento) throws IOException {
+			FileReader reader = new FileReader(pathDocumento);
+			BufferedReader bufferReader = new BufferedReader(reader);
+			String linea = "";
+			HashMap<Integer, ArrayList<String>> queryKeyWords = new HashMap<Integer, ArrayList<String>>();
+
+			while ((linea = bufferReader.readLine()) != null) {
+				String[] token = linea.split(" ");
+
+				if (!queryKeyWords.containsKey(new Integer(token[0]))) {
+					queryKeyWords.put(new Integer(token[0]),
+							new ArrayList<String>());
+				}
+				
+				// Controllo che la keyword della query non sia gia' presente
+				if(!queryKeyWords.get(new Integer(token[0])).contains(token[1])) {
+					queryKeyWords.get(new Integer(token[0])).add(token[1]);
+				}
+			}
+
+			bufferReader.close();
+
+			return queryKeyWords;
+	}
 }

@@ -33,7 +33,11 @@ public class InformationRetrieval {
 			
 			// INIZIO LABORATORIO 3 //
 			
+			// Recupero tutte le keywords delle query
 			HashMap<Integer, HashMap<String, Integer>> keywordsQuery = Parser.parserQueryKeyword("./data/query-keyword.txt");
+			
+			// Recupero lo stem di tutte le keyword
+			HashMap<Integer, ArrayList<String>> stemQuery = Parser.parserQueryStem("./data/query-stem.txt");
 			
 			// FINE LABORATORIO 3 //
 			
