@@ -19,10 +19,11 @@ public class Reperimento {
 			HashMap<Integer, HashMap<String, Double>> _pesiKeywordDocumenti,
 			HashMap<Integer, HashMap<String, Integer>> _keywordsQuery,
 			HashMap<Integer, ArrayList<String>> _stemQuery,
-			HashMap<Integer, Documento> docs) {
+			HashMap<Integer, Documento> _docs) {
 		pesiKeywordDocumenti = _pesiKeywordDocumenti;
 		keywordsQuery = _keywordsQuery;
 		stemQuery = _stemQuery;
+		docs = _docs;
 	}
 
 	public double getPesoStem(int queryId, int docId) throws IOException {
