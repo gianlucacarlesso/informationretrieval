@@ -27,7 +27,7 @@ public class InformationRetrieval {
 				docs.put(k, doc);
 			}
 			Formula ff = new Formula();
-			ff.calcolaFormula(docs, "./data/pesi.txt");
+			HashMap<Integer, HashMap<String, Double>> pesiDocs = ff.calcolaFormula(docs, "./data/pesi.txt");
 			
 			// FINE LABORATORIO 2 //
 			
@@ -38,6 +38,9 @@ public class InformationRetrieval {
 			
 			// Recupero lo stem di tutte le keyword
 			HashMap<Integer, ArrayList<String>> stemQuery = Parser.parserQueryStem("./data/query-stem.txt");
+			
+			Reperimento reperimento = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
+			reperimento.eseguiReperimento("./data/reperimento.txt");
 			
 			// FINE LABORATORIO 3 //
 			
