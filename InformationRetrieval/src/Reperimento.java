@@ -55,7 +55,7 @@ public class Reperimento {
 	}
 
 	public HashMap<Integer, HashMap<Integer, Double>> eseguiReperimento(
-			String path) throws IOException {
+			String path, int maxDocsReperiti) throws IOException {
 		// queryId -> (docId; peso)
 		HashMap<Integer, HashMap<Integer, Double>> reperimento = new HashMap<Integer, HashMap<Integer, Double>>();
 
@@ -79,12 +79,12 @@ public class Reperimento {
 		}
 
 		// salvo i pesi in un file
-		scriviPesi(path, reperimento, 0);
+		scriviPesi(path, reperimento, maxDocsReperiti);
 		return reperimento;
 	}
 
 	public void scriviPesi(String path,
-			HashMap<Integer, HashMap<Integer, Double>> reperimento, int max)
+			HashMap<Integer, HashMap<Integer, Double>> reperimento, int maxDocReperiti)
 			throws IOException {
 		FileWriter writer = new FileWriter(path);
 
@@ -108,7 +108,7 @@ public class Reperimento {
 					entries);
 			Collections.sort(entrylist, comp);
 
-			for (int i = 0; i < entrylist.size() && i < max; i++) {
+			for (int i = 0; i < entrylist.size() && (i < maxDocReperiti || maxDocReperiti == 0); i++) {
 				// Calcolo i diversi coefficienti
 
 				writer.write(queryId + " Q0 " + entrylist.get(i).getKey() + " "
