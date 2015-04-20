@@ -7,11 +7,13 @@ import java.util.Set;
 public class InformationRetrieval {
 	public static void main(String[] args) {
 		try {
-			HashMap<Integer, String> docsTitolo = new HashMap<Integer, String>(); //Parser.parserDocumentoTitolo("./data/docid.documento-testo.txt");
+			
+			// INIZIO LABORATORIO 2 //
+			
+			HashMap<Integer, String> docsTitolo = new HashMap<Integer, String>();
 			HashMap<Integer, String> docsAbstract = new HashMap<Integer, String>();
 			HashMap<Integer, ArrayList<Integer>> docsCitazioni = new HashMap<Integer, ArrayList<Integer>>();
 			HashMap<Integer, HashMap<String, Integer>> docsKeyWords = Parser.parserDocumentoKeyWords("./data/freq.docid.word.txt");
-			// Ho commentato provvisoriamente per velocizzare le prove, dando al documento come stem le sue parole chiave � [da decommentare]
 			HashMap<Integer, HashMap<String, Integer>> docsStems = Parser.parserDocumentoKeyWords("./data/freq.docid.stem.txt");
 			
 		    // UtilsIR.reformatXML("./data/docid.documento.xml", "./data/documenti.xml");
@@ -21,13 +23,19 @@ public class InformationRetrieval {
 			HashMap<Integer, Documento> docs = new HashMap<Integer, Documento>();
 			Set<Integer> docsid = docsTitolo.keySet();
 			for(int k: docsid) {
-				//if(k==20 || k==5) { // Solo per debug
 				Documento doc = new Documento(k, docsTitolo.get(k), docsAbstract.get(k), docsKeyWords.get(k), docsStems.get(k), docsCitazioni.get(k));
 				docs.put(k, doc);
-				//}
 			}
 			Formula ff = new Formula();
 			ff.calcolaFormula(docs, "./data/pesi.txt");
+			
+			// FINE LABORATORIO 2 //
+			
+			// INIZIO LABORATORIO 3 //
+			
+			HashMap<Integer, HashMap<String, Integer>> keywordsQuery = Parser.parserQueryKeyword("./data/query-keyword.txt");
+			
+			// FINE LABORATORIO 3 //
 			
 			System.out.println("Fine");
 		} catch (IOException e) {
