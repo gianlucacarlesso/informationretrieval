@@ -116,9 +116,9 @@ public class Reperimento {
 						+ (i + 1) + " " + entrylist.get(i).getValue()
 						+ " GR11R1\n");
 			}
-
-			writer.close();
 		}
+		
+		writer.close();
 	}
 
 	
