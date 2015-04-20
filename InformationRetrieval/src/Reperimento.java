@@ -99,7 +99,7 @@ public class Reperimento {
 				@Override
 				public int compare(Entry<Integer, Double> o1,
 						Entry<Integer, Double> o2) {
-					return Double.compare(o1.getValue(), o2.getValue());
+					return Double.compare(o2.getValue(), o1.getValue());
 				}
 			};
 			
