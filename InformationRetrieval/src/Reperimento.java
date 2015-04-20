@@ -71,7 +71,7 @@ public class Reperimento {
 			for (Integer docId : documenti) {
 
 				// Per ogni documento:
-				pesokeyword = 0;
+				pesokeyword = getPeso(queryId, docId);
 				pesoStem = getPesoStem(queryId, docId);
 
 				reperimento.get(queryId).put(docId, pesokeyword + pesoStem);
@@ -119,4 +119,33 @@ public class Reperimento {
 			writer.close();
 		}
 	}
+
+	
+	public double getPeso(int queryId, int queryDoc) throws IOException{
+		double peso = 0;
+		
+		if(!keywordsQuery.containsKey(queryId)) {
+			throw new IOException("L'id della query specificata non esiste");
+		} else if(!pesiKeywordDocumenti.containsKey(queryDoc)) {
+			throw new IOException("L'id del documento specificato non esiste");
+			
+		} else {
+			
+			HashMap<String, Double> pesiKeywords = pesiKeywordDocumenti.get(new Integer(queryDoc));
+			Set<String> keywordsDoc = pesiKeywords.keySet();
+			
+			HashMap<String, Integer> keywQuery = keywordsQuery.get(queryId);
+			Set<String> keywordsThisQuery = keywQuery.keySet();
+			
+			
+			for(String kDoc: keywordsDoc) {
+				if(keywordsThisQuery.contains(kDoc)) {
+					peso = peso + pesiKeywords.get(kDoc);
+				}
+			}
+		}
+		
+		return peso;
+	}
+	
 }
