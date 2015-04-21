@@ -11,19 +11,20 @@ public class InformationRetrieval {
 			// INIZIO LABORATORIO 2 //
 			
 			HashMap<Integer, String> docsTitolo = new HashMap<Integer, String>();
+			HashMap<Integer, String> docsAutori = new HashMap<Integer, String>();
 			HashMap<Integer, String> docsAbstract = new HashMap<Integer, String>();
 			HashMap<Integer, ArrayList<Integer>> docsCitazioni = new HashMap<Integer, ArrayList<Integer>>();
 			HashMap<Integer, HashMap<String, Integer>> docsKeyWords = Parser.parserDocumentoKeyWords("./data/freq.docid.word.txt");
 			HashMap<Integer, HashMap<String, Integer>> docsStems = Parser.parserDocumentoKeyWords("./data/freq.docid.stem.txt");
 			
 		    // UtilsIR.reformatXML("./data/docid.documento.xml", "./data/documenti.xml");
-			Parser.parserDocumenti("./data/documenti.xml", docsCitazioni, docsTitolo, docsAbstract);
+			Parser.parserDocumenti("./data/documenti.xml", docsCitazioni, docsTitolo, docsAutori, docsAbstract);
 			
 			// Creo un arraylist con tutti i documenti della collezione
 			HashMap<Integer, Documento> docs = new HashMap<Integer, Documento>();
 			Set<Integer> docsid = docsTitolo.keySet();
 			for(int k: docsid) {
-				Documento doc = new Documento(k, docsTitolo.get(k), docsAbstract.get(k), docsKeyWords.get(k), docsStems.get(k), docsCitazioni.get(k));
+				Documento doc = new Documento(k, docsTitolo.get(k), docsAutori.get(k), docsAbstract.get(k), docsKeyWords.get(k), docsStems.get(k), docsCitazioni.get(k));
 				docs.put(k, doc);
 			}
 			Formula ff = new Formula();

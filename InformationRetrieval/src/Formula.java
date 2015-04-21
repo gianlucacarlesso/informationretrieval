@@ -155,8 +155,7 @@ public class Formula {
 
 				pesi.get(docid).put(key, peso);
 				
-			}
-			
+			}			
 		}
 
 		// salvo i pesi in un file
@@ -170,12 +169,12 @@ public class Formula {
 
 		Set<Integer> pesiId = pesi.keySet();
 		// Scorro tutti i documenti
+		String backSpace = "";
+		boolean space = false;
 		for (Integer pesoId : pesiId) {
 			// Procedo per ogni keywords
 			Set<String> keywords = pesi.get(pesoId).keySet();
 
-			String backSpace = "";
-			boolean space = false;
 			for (String key : keywords) {
 				// Calcolo i diversi coefficienti
 				Double valorePeso = pesi.get(pesoId).get(key);

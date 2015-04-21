@@ -57,7 +57,7 @@ public class Parser {
 	}
 
 	public static HashMap<Integer, ArrayList<Integer>> parserDocumenti(
-			String pathDocumento, HashMap<Integer, ArrayList<Integer>> docsCitazioni, HashMap<Integer, String> docsTitolo, HashMap<Integer, String> docsAbstract) {
+			String pathDocumento, HashMap<Integer, ArrayList<Integer>> docsCitazioni, HashMap<Integer, String> docsTitolo, HashMap<Integer, String> docsAutori, HashMap<Integer, String> docsAbstract) {
 
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		try {
@@ -84,12 +84,21 @@ public class Parser {
 								.getElementsByTagName("DOCID").item(0)
 								.getTextContent().trim());
 
-						// System.out.println(docid);
+						//System.out.println(docid);
 
 						// Recupero titolo
 						String title = eElement.getElementsByTagName("TITLE")
 								.item(0).getTextContent().trim();
 						docsTitolo.put(docid, title);
+						
+						// Recupero autori
+						Node nodeAutori = eElement.getElementsByTagName("AUTHORS").item(0);
+						String autori = "";
+						if(nodeAutori != null) {
+								autori = nodeAutori.getTextContent().trim();
+						}
+
+						docsAutori.put(docid, autori);
 						
 						// Recupero abstract
 						
