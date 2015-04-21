@@ -151,7 +151,7 @@ public class Formula {
 				kstem = pesoStemKeyword(documento, key);
 				kcitazioni = pesoCitazioni(docs, documento, key);
 
-				double peso = titolo + tfidf + tfidfAbstract + kstem + kcitazioni;
+				double peso = titolo + tfidf + tfidfAbstract + kstem + 0*kcitazioni;
 
 				pesi.get(docid).put(key, peso);
 				
@@ -174,11 +174,19 @@ public class Formula {
 			// Procedo per ogni keywords
 			Set<String> keywords = pesi.get(pesoId).keySet();
 
+			String backSpace = "";
+			boolean space = false;
 			for (String key : keywords) {
 				// Calcolo i diversi coefficienti
 				Double valorePeso = pesi.get(pesoId).get(key);
 
-				writer.write(key + " " + pesoId + " " + valorePeso + "\n");
+				if(space) {
+					backSpace = "\n";
+				} else {
+					space = true;
+				}
+				
+				writer.write(backSpace + key + " " + pesoId + " " + valorePeso);
 			}
 		}
 

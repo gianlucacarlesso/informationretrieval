@@ -113,10 +113,23 @@ public class Reperimento {
 			
 			ranking.put(queryId, entrylist);
 
+			String backspace = "";
 			for (int i = 0; i < entrylist.size() && (i < maxDocReperiti || maxDocReperiti == 0); i++) {
 				// Calcolo i diversi coefficienti
 
-				writer.write(queryId + " Q0 " + entrylist.get(i).getKey() + " " + (i + 1) + " " + entrylist.get(i).getValue() + " "	+ " GR11R1\n");
+				String queryID = "";
+				if(queryId < 10) {
+					queryID = "0";
+				}
+				queryID += queryId;
+				
+				if((i + 1) < entrylist.size()) {
+					backspace = "\n";
+				} else {
+					backspace = "";
+				}
+				
+				writer.write(queryID + " Q0 " + entrylist.get(i).getKey() + " " + (i + 1) + " " + entrylist.get(i).getValue() + " "	+ " GR11R1" + backspace);
 			}
 		}
 		
