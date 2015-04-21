@@ -186,4 +186,30 @@ public class Parser {
 
 			return queryKeyWords;
 	}
+	
+	public static HashMap<Integer, ArrayList<Integer>> parserDocReperiti(
+			String pathDocumento) throws IOException {
+			FileReader reader = new FileReader(pathDocumento);
+			BufferedReader bufferReader = new BufferedReader(reader);
+			String linea = "";
+			HashMap<Integer, ArrayList<Integer>> docsReperiti = new HashMap<Integer, ArrayList<Integer>>();
+
+			while ((linea = bufferReader.readLine()) != null) {
+				String[] token = linea.split(" ");
+
+				if (!docsReperiti.containsKey(new Integer(token[0]))) {
+					docsReperiti.put(new Integer(token[0]),
+							new ArrayList<Integer>());
+				}
+				
+				// Controllo che la keyword della query non sia gia' presente
+				if(!docsReperiti.get(new Integer(token[0])).contains(new Integer(token[1]))) {
+					docsReperiti.get(new Integer(token[0])).add(new Integer(token[1]));
+				}
+			}
+
+			bufferReader.close();
+
+			return docsReperiti;
+	}
 }

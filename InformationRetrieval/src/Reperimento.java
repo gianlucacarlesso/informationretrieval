@@ -84,11 +84,13 @@ public class Reperimento {
 		return reperimento;
 	}
 
-	public void scriviPesi(String path,
+	public HashMap<Integer, List<Map.Entry<Integer, Double>>> scriviPesi(String path,
 			HashMap<Integer, HashMap<Integer, Double>> reperimento, int maxDocReperiti)
 			throws IOException {
 		FileWriter writer = new FileWriter(path);
 
+		HashMap<Integer, List<Map.Entry<Integer, Double>>> ranking = new HashMap<Integer, List<Entry<Integer,Double>>>();
+		
 		Set<Integer> queriesId = reperimento.keySet();
 		// Scorro tutte le query
 		for (Integer queryId : queriesId) {
@@ -108,17 +110,19 @@ public class Reperimento {
 			List<Map.Entry<Integer, Double>> entrylist = new ArrayList<Map.Entry<Integer, Double>>(
 					entries);
 			Collections.sort(entrylist, comp);
+			
+			ranking.put(queryId, entrylist);
 
 			for (int i = 0; i < entrylist.size() && (i < maxDocReperiti || maxDocReperiti == 0); i++) {
 				// Calcolo i diversi coefficienti
 
-				writer.write(queryId + " Q0 " + entrylist.get(i).getKey() + " "
-						+ (i + 1) + " " + entrylist.get(i).getValue()
-						+ " GR11R1\n");
+				writer.write(queryId + " Q0 " + entrylist.get(i).getKey() + " " + (i + 1) + " " + entrylist.get(i).getValue() + " "	+ " GR11R1\n");
 			}
 		}
 		
 		writer.close();
+		
+		return ranking;
 	}
 
 	
@@ -141,7 +145,7 @@ public class Reperimento {
 			
 			for(String kDoc: keywordsDoc) {
 				if(keywordsThisQuery.contains(kDoc)) {
-					peso = peso + pesiKeywords.get(kDoc);
+					peso = peso + (pesiKeywords.get(kDoc)) * keywordsQuery.get(queryId).get(kDoc);
 				}
 			}
 		}

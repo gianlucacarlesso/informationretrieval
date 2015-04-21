@@ -85,6 +85,7 @@ public class Formula {
 
 		double kstem = (numStemKeyword - frequenzaKeyword) * 1.0
 				/ numFreqKeywordsTotali;
+		
 		return kstem;
 	}
 
