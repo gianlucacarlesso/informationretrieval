@@ -41,7 +41,7 @@ public class InformationRetrieval {
 			HashMap<Integer, ArrayList<String>> stemQuery = Parser.parserQueryStem("./data/query-stem.txt");
 			
 			Reperimento reperimento = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
-			reperimento.eseguiReperimento("./data/reperimento.txt", 0);
+			reperimento.eseguiReperimento("./data/reperimento.txt", 100);
 			
 			// FINE LABORATORIO 3 //
 			

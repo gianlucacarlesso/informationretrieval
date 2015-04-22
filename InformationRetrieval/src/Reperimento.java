@@ -28,7 +28,7 @@ public class Reperimento {
 
 	public double getPesoStem(int queryId, int docId) throws IOException {
 		double peso = 0;
-
+		double numeroKeyWordsQuery = 0;
 		if (!keywordsQuery.containsKey(queryId)) {
 			throw new IOException("L'id della query specificata non esiste");
 		} else if (!pesiKeywordDocumenti.containsKey(docId)) {
@@ -39,6 +39,12 @@ public class Reperimento {
 			HashMap<String, Double> pesiKeywords = pesiKeywordDocumenti
 					.get(new Integer(docId));
 			Set<String> keywordsDoc = pesiKeywords.keySet();
+			
+			HashMap<String, Integer> keywQuery = keywordsQuery.get(queryId);
+			Set<String> keywordsThisQuery = keywQuery.keySet();
+			numeroKeyWordsQuery = keywordsThisQuery.size();
+			
+			
 			for (String kDoc : keywordsDoc) {
 				// Verifico che la keyword del documento NON sia presente nelle
 				// keyword della query e che lo stem di
@@ -52,7 +58,12 @@ public class Reperimento {
 			}
 		}
 
-		return peso;
+		if (numeroKeyWordsQuery>0){
+			return peso*numeroKeyWordsQuery;
+		} else {
+			return peso;
+		}
+
 	}
 
 	public HashMap<Integer, HashMap<Integer, Double>> eseguiReperimento(
@@ -141,7 +152,7 @@ public class Reperimento {
 	
 	public double getPeso(int queryId, int queryDoc) throws IOException{
 		double peso = 0;
-		
+		double numeroKeyWordsQuery = 0;
 		if(!keywordsQuery.containsKey(queryId)) {
 			throw new IOException("L'id della query specificata non esiste");
 		} else if(!pesiKeywordDocumenti.containsKey(queryDoc)) {
@@ -154,16 +165,21 @@ public class Reperimento {
 			
 			HashMap<String, Integer> keywQuery = keywordsQuery.get(queryId);
 			Set<String> keywordsThisQuery = keywQuery.keySet();
-			
+			numeroKeyWordsQuery = keywordsThisQuery.size();
 			
 			for(String kDoc: keywordsDoc) {
 				if(keywordsThisQuery.contains(kDoc)) {
-					peso = peso + (pesiKeywords.get(kDoc)) * keywordsQuery.get(queryId).get(kDoc);
+					peso = peso + (pesiKeywords.get(kDoc) + Math.exp(keywordsQuery.get(queryId).get(kDoc)));
 				}
 			}
 		}
 		
-		return peso;
+		if (numeroKeyWordsQuery>0){
+			return peso * numeroKeyWordsQuery;
+		} else {
+			return peso;
+		}
 	}
+		
 	
 }
