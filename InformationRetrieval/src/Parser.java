@@ -196,4 +196,28 @@ public class Parser {
 			return queryKeyWords;
 	}
 	
+	public static HashMap<Integer, ArrayList<Integer>> parserQrels(
+			String pathDocumento) throws IOException {
+			FileReader reader = new FileReader(pathDocumento);
+			BufferedReader bufferReader = new BufferedReader(reader);
+			String linea = "";
+			HashMap<Integer, ArrayList<Integer>> queryKeyWords = new HashMap<Integer, ArrayList<Integer>>();
+
+			while ((linea = bufferReader.readLine()) != null) {
+				String[] token = linea.split(" ");
+
+				if (!queryKeyWords.containsKey(new Integer(token[0]))) {
+					queryKeyWords.put(new Integer(token[0]),
+							new ArrayList<Integer>());
+				}
+				
+				queryKeyWords.get(new Integer(token[0])).add(new Integer(token[1]));
+			}
+
+			bufferReader.close();
+
+			return queryKeyWords;
+	}
+	
+	
 }

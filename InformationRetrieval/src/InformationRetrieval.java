@@ -39,9 +39,11 @@ public class InformationRetrieval {
 			
 			// Recupero lo stem di tutte le keyword
 			HashMap<Integer, ArrayList<String>> stemQuery = Parser.parserQueryStem("./data/query-stem.txt");
-			
+			int M = 1000;
+			int N = 100;
 			Reperimento reperimento = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
-			reperimento.eseguiReperimento("./data/reperimento.txt", 0);
+			HashMap<Integer, HashMap<Integer, Double>> docsReperiti = reperimento.eseguiReperimento("./data/reperimento.txt", M);
+			reperimento.eseguiRelevanceFeedback("./data/reperimentoRF.txt", docsReperiti, N, M, "./data/qrels-originale.txt");
 			
 			// FINE LABORATORIO 3 //
 			
