@@ -197,6 +197,8 @@ public class Reperimento {
 
 		Set<Integer> queries = keywordsQuery.keySet();
 		Set<Integer> documenti = pesiKeywordDocumenti.keySet();
+		
+		// Per ogni query:
 		for (Integer queryId : queries) {
 			double pesokeyword = 0;
 			double pesoStem = 0;
@@ -219,25 +221,21 @@ public class Reperimento {
 
 			reperimentoRF.put(queryId, new HashMap<Integer, Double>());
 
-			// Per ogni query:
+			// Per ogni documento:
 			for (Integer docId : documenti) {
-				if(docSelezionati.contains(docId)) {
-					// Per ogni documento:
-					pesokeyword = getPeso(queryId, docId);
-					pesoStem = getPesoStem(queryId, docId);
+				pesokeyword = getPeso(queryId, docId);
+				pesoStem = getPesoStem(queryId, docId);
 
-					double peso = pesokeyword + pesoStem;
-					if (docRilevanti.contains(docId)) {
-						if(!docRilevanti.isEmpty()) {
-							peso += peso * (1.0 / docRilevanti.size());
-						}
-					} else {
-						peso -= peso * (1.0 / (M - docRilevanti.size()));
-					}
-
-					reperimentoRF.get(queryId).put(docId, peso);
+				double peso = pesokeyword + pesoStem;
+				
+				if(docRilevanti.contains(docId) && !docRilevanti.isEmpty()) {
+					peso += peso * (1.0 / docRilevanti.size());	
+				} else {
+					peso -= peso * (1.0 / (M - docRilevanti.size()));
 				}
+				reperimentoRF.get(queryId).put(docId, peso);
 			}
+			
 		}
 
 		// salvo i pesi in un file

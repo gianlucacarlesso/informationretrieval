@@ -45,9 +45,12 @@ public class InformationRetrieval {
 			int N = 100;
 			Reperimento reperimento = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
 			HashMap<Integer, List<Map.Entry<Integer, Double>>> docsReperiti = reperimento.eseguiReperimento("./data/reperimento.txt", M);
+			// FINE LABORATORIO 3 //
+			
+			// INIZIO LABORATORIO 4 //
 			reperimento.eseguiRelevanceFeedback("./data/reperimentoRF.txt", docsReperiti, N, M, "./data/qrels-originale.txt");
 			
-			// FINE LABORATORIO 3 //
+			
 			
 			System.out.println("Fine");
 		} catch (IOException e) {
