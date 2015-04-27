@@ -78,7 +78,7 @@ public class Documento {
 		return stems.get(getStemKeyWords(key));
 	}
 
-	// Ritorna la frequenza di una keyword4
+	// Ritorna la frequenza di una keyword
 	public int getFrequenzaKeyword(String key) {
 		return keywords.get(key);
 	}

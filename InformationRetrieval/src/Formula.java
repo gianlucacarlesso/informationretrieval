@@ -151,7 +151,7 @@ public class Formula {
 				kstem = pesoStemKeyword(documento, key);
 				kcitazioni = pesoCitazioni(docs, documento, key);
 
-				double peso = titolo + tfidf + tfidfAbstract + kstem + 0*kcitazioni;
+				double peso = (titolo + tfidf + tfidfAbstract + kstem + 0*kcitazioni);
 
 				pesi.get(docid).put(key, peso);
 				
