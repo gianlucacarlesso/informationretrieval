@@ -1,6 +1,8 @@
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 
@@ -42,7 +44,7 @@ public class InformationRetrieval {
 			int M = 1000;
 			int N = 100;
 			Reperimento reperimento = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
-			HashMap<Integer, HashMap<Integer, Double>> docsReperiti = reperimento.eseguiReperimento("./data/reperimento.txt", M);
+			HashMap<Integer, List<Map.Entry<Integer, Double>>> docsReperiti = reperimento.eseguiReperimento("./data/reperimento.txt", M);
 			reperimento.eseguiRelevanceFeedback("./data/reperimentoRF.txt", docsReperiti, N, M, "./data/qrels-originale.txt");
 			
 			// FINE LABORATORIO 3 //

@@ -65,7 +65,7 @@ public class Reperimento {
 
 	}
 
-	public HashMap<Integer, HashMap<Integer, Double>> eseguiReperimento(
+	public HashMap<Integer, List<Map.Entry<Integer, Double>>> eseguiReperimento(
 			String path, int maxDocsReperiti) throws IOException {
 		// queryId -> (docId; peso)
 		HashMap<Integer, HashMap<Integer, Double>> reperimento = new HashMap<Integer, HashMap<Integer, Double>>();
@@ -90,8 +90,7 @@ public class Reperimento {
 		}
 
 		// salvo i pesi in un file
-		scriviPesi(path, reperimento, maxDocsReperiti);
-		return reperimento;
+		return scriviPesi(path, reperimento, maxDocsReperiti);
 	}
 
 	public HashMap<Integer, List<Map.Entry<Integer, Double>>> scriviPesi(
@@ -188,7 +187,7 @@ public class Reperimento {
 
 	public HashMap<Integer, HashMap<Integer, Double>> eseguiRelevanceFeedback(
 			String path,
-			HashMap<Integer, HashMap<Integer, Double>> reperimento, int N,
+			HashMap<Integer, List<Map.Entry<Integer, Double>>> reperimento, int N,
 			int M, String pathQrels) throws IOException {
 		// queryId -> (docId; peso)
 		HashMap<Integer, HashMap<Integer, Double>> reperimentoRF = new HashMap<Integer, HashMap<Integer, Double>>();
@@ -203,24 +202,18 @@ public class Reperimento {
 			double pesoStem = 0;
 
 			// Recupero i primi N documenti reperiti
-			HashMap<Integer, Double> docReperiti = reperimento.get(queryId);
+			List<Map.Entry<Integer, Double>> docReperiti = reperimento.get(queryId);
 			ArrayList<Integer> docSelezionati = new ArrayList<Integer>();
-			Set<Integer> docs = docReperiti.keySet();
-			int counter = 0;
-			for (Integer key : docs) {
-				if (counter >= N) {
-					break;
-				}
 
-				docSelezionati.add(key);
-				counter++;
+			for(int i = 0; i < docReperiti.size() && i < N; i++) {
+				docSelezionati.add(docReperiti.get(i).getKey());
 			}
 
 			// Conto quanti degli N documenti sono rilevanti
 			ArrayList<Integer> docRilevanti = new ArrayList<Integer>();
 			for (int i = 0; i < docSelezionati.size(); i++) {
 				if (docQrels.containsKey(queryId) && docQrels.get(queryId).contains(docSelezionati.get(i))) {
-					docRilevanti.add(i);
+					docRilevanti.add(docSelezionati.get(i));
 				}
 			}
 
@@ -228,7 +221,7 @@ public class Reperimento {
 
 			// Per ogni query:
 			for (Integer docId : documenti) {
-				if (reperimento.get(queryId).containsKey(docId)) {
+				if(docSelezionati.contains(docId)) {
 					// Per ogni documento:
 					pesokeyword = getPeso(queryId, docId);
 					pesoStem = getPesoStem(queryId, docId);
@@ -236,10 +229,10 @@ public class Reperimento {
 					double peso = pesokeyword + pesoStem;
 					if (docRilevanti.contains(docId)) {
 						if(!docRilevanti.isEmpty()) {
-							peso *= (1.0 / docRilevanti.size());
+							peso += peso * (1.0 / docRilevanti.size());
 						}
 					} else {
-						peso *= -(1.0 / (M - docRilevanti.size()));
+						peso -= peso * (1.0 / (M - docRilevanti.size()));
 					}
 
 					reperimentoRF.get(queryId).put(docId, peso);
@@ -251,5 +244,4 @@ public class Reperimento {
 		scriviPesi(path, reperimentoRF, M);
 		return reperimentoRF;
 	}
-
 }
