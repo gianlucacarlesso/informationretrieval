@@ -11,13 +11,13 @@ import java.util.Set;
 
 public class Reperimento {
 	private HashMap<Integer, HashMap<String, Double>> pesiKeywordDocumenti;
-	private HashMap<Integer, HashMap<String, Integer>> keywordsQuery;
+	private HashMap<Integer, HashMap<String, Double>> keywordsQuery;
 	private HashMap<Integer, ArrayList<String>> stemQuery;
 	private HashMap<Integer, Documento> docs;
 
 	public Reperimento(
 			HashMap<Integer, HashMap<String, Double>> _pesiKeywordDocumenti,
-			HashMap<Integer, HashMap<String, Integer>> _keywordsQuery,
+			HashMap<Integer, HashMap<String, Double>> _keywordsQuery,
 			HashMap<Integer, ArrayList<String>> _stemQuery,
 			HashMap<Integer, Documento> _docs) {
 		pesiKeywordDocumenti = _pesiKeywordDocumenti;
@@ -40,7 +40,7 @@ public class Reperimento {
 					.get(new Integer(docId));
 			Set<String> keywordsDoc = pesiKeywords.keySet();
 
-			HashMap<String, Integer> keywQuery = keywordsQuery.get(queryId);
+			HashMap<String, Double> keywQuery = keywordsQuery.get(queryId);
 			Set<String> keywordsThisQuery = keywQuery.keySet();
 			numeroKeyWordsQuery = keywordsThisQuery.size();
 
@@ -49,7 +49,7 @@ public class Reperimento {
 				// keyword della query e che lo stem di
 				// tale keyword sia presente nello stem delle keyword della
 				// query
-				if (!keywordsQuery.containsKey(kDoc)
+				if ((!keywordsQuery.get(queryId).containsKey(kDoc) || (keywordsQuery.get(queryId).containsKey(kDoc) && keywordsQuery.get(queryId).get(kDoc) == 0.0))
 						&& stemQuery.get(queryId).contains(
 								doc.getStemKeyWords(kDoc))) {
 					peso += pesiKeywords.get(kDoc);
@@ -103,7 +103,6 @@ public class Reperimento {
 
 		Set<Integer> queriesId = reperimento.keySet();
 		// Scorro tutte le query
-		int counter = 0;
 		for (Integer queryId : queriesId) {
 			// Procedo per ogni
 
@@ -135,9 +134,7 @@ public class Reperimento {
 				}
 				queryID += queryId;
 
-				if ((counter + 1) < queriesId.size()
-						|| (counter + 1 == queriesId.size() && (i + 1) < entrylist
-								.size())) {
+				if ((i + 1) < entrylist.size()) {
 					backspace = "\n";
 				} else {
 					backspace = "";
@@ -146,10 +143,7 @@ public class Reperimento {
 				writer.write(queryID + " Q0 " + entrylist.get(i).getKey() + " "
 						+ (i + 1) + " " + entrylist.get(i).getValue() + " "
 						+ " GR11R1" + backspace);
-
 			}
-
-			counter++;
 		}
 
 		writer.close();
@@ -171,12 +165,12 @@ public class Reperimento {
 					.get(new Integer(queryDoc));
 			Set<String> keywordsDoc = pesiKeywords.keySet();
 
-			HashMap<String, Integer> keywQuery = keywordsQuery.get(queryId);
+			HashMap<String, Double> keywQuery = keywordsQuery.get(queryId);
 			Set<String> keywordsThisQuery = keywQuery.keySet();
 			numeroKeyWordsQuery = keywordsThisQuery.size();
 
 			for (String kDoc : keywordsDoc) {
-				if (keywordsThisQuery.contains(kDoc)) {
+				if (keywordsThisQuery.contains(kDoc) && keywordsQuery.get(queryId).get(kDoc) != 0.0) {
 					peso = peso
 							+ (pesiKeywords.get(kDoc) + Math.exp(keywordsQuery
 									.get(queryId).get(kDoc)));
@@ -193,8 +187,8 @@ public class Reperimento {
 
 	public HashMap<Integer, HashMap<Integer, Double>> eseguiRelevanceFeedback(
 			String path,
-			HashMap<Integer, List<Map.Entry<Integer, Double>>> reperimento,
-			int N, int M, String pathQrels) throws IOException {
+			HashMap<Integer, List<Map.Entry<Integer, Double>>> reperimento, int N,
+			int M, String pathQrels) throws IOException {
 		// queryId -> (docId; peso)
 		HashMap<Integer, HashMap<Integer, Double>> reperimentoRF = new HashMap<Integer, HashMap<Integer, Double>>();
 
@@ -203,58 +197,45 @@ public class Reperimento {
 
 		Set<Integer> queries = keywordsQuery.keySet();
 		Set<Integer> documenti = pesiKeywordDocumenti.keySet();
+		
+		// Per ogni query:
 		for (Integer queryId : queries) {
 			double pesokeyword = 0;
 			double pesoStem = 0;
 
 			// Recupero i primi N documenti reperiti
-			List<Map.Entry<Integer, Double>> docReperiti = reperimento
-					.get(queryId);
+			List<Map.Entry<Integer, Double>> docReperiti = reperimento.get(queryId);
 			ArrayList<Integer> docSelezionati = new ArrayList<Integer>();
 
-			for (int i = 0; i < docReperiti.size() && i < N; i++) {
+			for(int i = 0; i < docReperiti.size() && i < N; i++) {
 				docSelezionati.add(docReperiti.get(i).getKey());
 			}
 
 			// Conto quanti degli N documenti sono rilevanti
 			ArrayList<Integer> docRilevanti = new ArrayList<Integer>();
 			for (int i = 0; i < docSelezionati.size(); i++) {
-				if (docQrels.containsKey(queryId)
-						&& docQrels.get(queryId)
-								.contains(docSelezionati.get(i))) {
+				if (docQrels.containsKey(queryId) && docQrels.get(queryId).contains(docSelezionati.get(i))) {
 					docRilevanti.add(docSelezionati.get(i));
 				}
 			}
 
 			reperimentoRF.put(queryId, new HashMap<Integer, Double>());
 
-			// Per ogni query:
+			// Per ogni documento:
 			for (Integer docId : documenti) {
-				if (docSelezionati.contains(docId)) {
-					// Per ogni documento:
-					pesokeyword = getPeso(queryId, docId);
-					pesoStem = getPesoStem(queryId, docId);
+				pesokeyword = getPeso(queryId, docId);
+				pesoStem = getPesoStem(queryId, docId);
 
-					double peso = pesokeyword + pesoStem;
-					if (docRilevanti.contains(docId)) {
-						if (!docRilevanti.isEmpty()) {
-							peso += peso * (1.0 / docRilevanti.size());
-						}
-					} else {
-						peso -= peso * (1.0 / (M - docRilevanti.size()));
-					}
-
-					// if (docRilevanti.contains(docId)) {
-					// if (!docRilevanti.isEmpty()) {
-					// peso += (peso * 0.75) / docRilevanti.size();
-					// }
-					// } else {
-					// peso -= (peso * 0.25) / (M - docRilevanti.size());
-					// }
-
-					reperimentoRF.get(queryId).put(docId, peso);
+				double peso = pesokeyword + pesoStem;
+				
+				if(docRilevanti.contains(docId) && !docRilevanti.isEmpty()) {
+					peso += peso * (1.0 / docRilevanti.size());	
+				} else {
+					peso -= peso * (1.0 / (M - docRilevanti.size()));
 				}
+				reperimentoRF.get(queryId).put(docId, peso);
 			}
+			
 		}
 
 		// salvo i pesi in un file

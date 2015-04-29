@@ -142,24 +142,24 @@ public class Parser {
 		return docsCitazioni;
 	}
 	
-	public static HashMap<Integer, HashMap<String, Integer>> parserQueryKeyword(
+	public static HashMap<Integer, HashMap<String, Double>> parserQueryKeyword(
 			String pathDocumento) throws IOException {
 			FileReader reader = new FileReader(pathDocumento);
 			BufferedReader bufferReader = new BufferedReader(reader);
 			String linea = "";
-			HashMap<Integer, HashMap<String, Integer>> queryKeyWords = new HashMap<Integer, HashMap<String, Integer>>();
+			HashMap<Integer, HashMap<String, Double>> queryKeyWords = new HashMap<Integer, HashMap<String, Double>>();
 
 			while ((linea = bufferReader.readLine()) != null) {
 				String[] token = linea.split(" ");
 
 				if (!queryKeyWords.containsKey(new Integer(token[0]))) {
 					queryKeyWords.put(new Integer(token[0]),
-							new HashMap<String, Integer>());
+							new HashMap<String, Double>());
 				}
 				
 				// Controllo che la keyword della query non sia gia' presente
 				if(!queryKeyWords.get(new Integer(token[0])).containsKey(token[1])) {
-					queryKeyWords.get(new Integer(token[0])).put(token[1], 1);
+					queryKeyWords.get(new Integer(token[0])).put(token[1], 1.0);
 				} else {
 					queryKeyWords.get(new Integer(token[0])).put(token[1], queryKeyWords.get(new Integer(token[0])).get(token[1]) + 1);
 				}
