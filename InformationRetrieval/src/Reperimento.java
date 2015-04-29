@@ -143,7 +143,7 @@ public class Reperimento {
 
 				writer.write(queryID + " Q0 " + entrylist.get(i).getKey() + " "
 						+ (i + 1) + " " + entrylist.get(i).getValue() + " "
-						+ " GR11R1" + backspace);
+						+ " GR11R4" + backspace);
 			}
 		}
 

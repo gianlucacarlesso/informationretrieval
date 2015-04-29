@@ -78,14 +78,15 @@ public class RelevanceFeedback {
 								.containsKey(key)) {
 							// La keyword del doc e' presente quindi
 							// coefficiente positivo
-							coeffPositivo += 1;
+							coeffPositivo += docs.get(docReperiti.get(i).getKey()).mieKeyword().get(key); 
+									
 						}
 					} else {
 						if (docs.get(docReperiti.get(i).getKey()).mieKeyword()
 								.containsKey(key)) {
 							// La keyword del doc NON e' presente quindi
 							// coefficiente positivo
-							coeffNegativo += 1;
+							coeffNegativo += docs.get(docReperiti.get(i).getKey()).mieKeyword().get(key);
 						}
 					}
 				}
@@ -146,14 +147,14 @@ public class RelevanceFeedback {
 								.containsKey(key)) {
 							// La keyword del doc e' presente quindi
 							// coefficiente positivo
-							coeffPositivo += 1;
+							coeffPositivo += 1;//pesiKeywordDocumenti.get(docReperiti.get(i).getKey()).get(key);
 						}
 					} else {
 						if (docs.get(docReperiti.get(i).getKey()).mieKeyword()
 								.containsKey(key)) {
 							// La keyword del doc NON e' presente quindi
 							// coefficiente positivo
-							coeffNegativo += 1;
+							coeffNegativo += 1;//pesiKeywordDocumenti.get(docReperiti.get(i).getKey()).get(key);
 						}
 					}
 				}

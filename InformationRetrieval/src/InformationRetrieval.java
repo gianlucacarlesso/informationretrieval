@@ -42,7 +42,7 @@ public class InformationRetrieval {
 			// Recupero lo stem di tutte le keyword
 			HashMap<Integer, ArrayList<String>> stemQuery = Parser.parserQueryStem("./data/query-stem.txt");
 			int M = 1000;
-			int N = 30;
+			int N =30;
 			Reperimento reperimento = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
 			HashMap<Integer, List<Map.Entry<Integer, Double>>> docsReperiti = reperimento.eseguiReperimento("./data/reperimento.txt", M);
 			// FINE LABORATORIO 3 //
@@ -55,7 +55,7 @@ public class InformationRetrieval {
 			
 			Reperimento reperimentoRF_pseudo = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
 			
-			HashMap<Integer, List<Map.Entry<Integer, Double>>> docsReperitiRF_esplicito = reperimentoRF_pseudo.eseguiReperimento("./data/reperimentoEsplicito.txt", M);
+			HashMap<Integer, List<Map.Entry<Integer, Double>>> docsReperitiRF_esplicito = reperimentoRF_pseudo.eseguiReperimento("./data/reperimentoPseudo.txt", M);
 			
 			
 			
