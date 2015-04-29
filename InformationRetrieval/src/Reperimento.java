@@ -52,7 +52,8 @@ public class Reperimento {
 				if ((!keywordsQuery.get(queryId).containsKey(kDoc) || (keywordsQuery.get(queryId).containsKey(kDoc) && keywordsQuery.get(queryId).get(kDoc) == 0.0))
 						&& stemQuery.get(queryId).contains(
 								doc.getStemKeyWords(kDoc))) {
-					peso += pesiKeywords.get(kDoc);
+					
+					peso += pesiKeywords.get(kDoc) ;
 				}
 			}
 		}
@@ -172,7 +173,7 @@ public class Reperimento {
 			for (String kDoc : keywordsDoc) {
 				if (keywordsThisQuery.contains(kDoc) && keywordsQuery.get(queryId).get(kDoc) != 0.0) {
 					peso = peso
-							+ (pesiKeywords.get(kDoc) + Math.exp(keywordsQuery
+							+ (pesiKeywords.get(kDoc) * keywordsQuery.get(queryId).get(kDoc) + Math.exp(keywordsQuery
 									.get(queryId).get(kDoc)));
 				}
 			}
