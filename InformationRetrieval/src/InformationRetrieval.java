@@ -16,11 +16,14 @@ public class InformationRetrieval {
 			HashMap<Integer, String> docsAutori = new HashMap<Integer, String>();
 			HashMap<Integer, String> docsAbstract = new HashMap<Integer, String>();
 			HashMap<Integer, ArrayList<Integer>> docsCitazioni = new HashMap<Integer, ArrayList<Integer>>();
+		
 			HashMap<Integer, HashMap<String, Integer>> docsKeyWords = Parser.parserDocumentoKeyWords("./data/freq.docid.word.txt");
 			HashMap<Integer, HashMap<String, Integer>> docsStems = Parser.parserDocumentoKeyWords("./data/freq.docid.stem.txt");
 			
 		    // UtilsIR.reformatXML("./data/docid.documento.xml", "./data/documenti.xml");
 			Parser.parserDocumenti("./data/documenti.xml", docsCitazioni, docsTitolo, docsAutori, docsAbstract);
+			
+			docsCitazioni = Parser.parserCitationsList("./data/citation.list.txt");
 			
 			// Creo un arraylist con tutti i documenti della collezione
 			HashMap<Integer, Documento> docs = new HashMap<Integer, Documento>();
@@ -57,6 +60,10 @@ public class InformationRetrieval {
 			
 			HashMap<Integer, List<Map.Entry<Integer, Double>>> docsReperitiRF_esplicito = reperimentoRF_pseudo.eseguiReperimento("./data/reperimentoPseudo.txt", M);
 			
+			// INIZIO LABORATORIO 5 //
+			
+			Reperimento reperimentoPageRank = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
+			reperimentoPageRank.eseguiReperimentoPageRank(0.25, M, docsReperiti, "./data/pageRank.txt");
 			
 			
 			System.out.println("Fine");

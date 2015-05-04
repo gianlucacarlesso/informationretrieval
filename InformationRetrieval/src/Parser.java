@@ -219,5 +219,33 @@ public class Parser {
 			return queryKeyWords;
 	}
 	
+	public static HashMap<Integer, ArrayList<Integer>> parserCitationsList(
+			String pathDocumento) throws IOException {
+			FileReader reader = new FileReader(pathDocumento);
+			BufferedReader bufferReader = new BufferedReader(reader);
+			String linea = "";
+			HashMap<Integer, ArrayList<Integer>> citationList = new HashMap<Integer, ArrayList<Integer>>();
+
+			while ((linea = bufferReader.readLine()) != null) {
+				String[] token = linea.split(" ");
+
+				if (!citationList.containsKey(new Integer(token[0]))) {
+					citationList.put(new Integer(token[0]),
+							new ArrayList<Integer>());
+				}
+				
+				for(int i = 1; i < token.length; i++) {
+					if(!citationList.get(new Integer(token[0])).contains(new Integer(token[0]))) {
+						citationList.get(new Integer(token[0])).add(new Integer(token[i]));
+					}
+				}
+				
+			}
+
+			bufferReader.close();
+
+			return citationList;
+	}
+	
 	
 }

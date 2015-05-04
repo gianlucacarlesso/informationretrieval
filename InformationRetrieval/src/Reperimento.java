@@ -243,4 +243,24 @@ public class Reperimento {
 		scriviPesi(path, reperimentoRF, M);
 		return reperimentoRF;
 	}
+	
+	public void eseguiReperimentoPageRank(double d, int M, HashMap<Integer, List<Map.Entry<Integer, Double>>> reperimento, String path) throws IOException {
+		PageRank pr = new PageRank(docs, d);
+		HashMap<Integer, Double> pr_valori = pr.getPageRank();
+		
+		HashMap<Integer, HashMap<Integer, Double>> reperimentoPR = new HashMap<Integer, HashMap<Integer,Double>>();
+		
+		Set<Integer> keys = reperimento.keySet();
+		for(Integer key : keys) {
+			reperimentoPR.put(key, new HashMap<Integer, Double>());
+			List<Map.Entry<Integer, Double>> listReperiti = reperimento.get(key);
+			for(int i = 0; i < listReperiti.size(); i++) {				
+				reperimentoPR.get(key).put(listReperiti.get(i).getKey(), listReperiti.get(i).getValue() * pr_valori.get(listReperiti.get(i)));
+			}
+		}
+		
+		scriviPesi(path, reperimentoPR, M);
+		
+	}
+	
 }
