@@ -82,7 +82,7 @@ public class PageRank {
 				// Aggiorno il valore del pagerank
 				pageRank.put(key, pr);
 			}
-			stabilita = true;
+
 			counter++;
 			System.out.println("Iterazione:" + counter);
 		}
