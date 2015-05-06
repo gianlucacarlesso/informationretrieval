@@ -244,8 +244,8 @@ public class Reperimento {
 		return reperimentoRF;
 	}
 	
-	public void eseguiReperimentoPageRank(double d, int M, HashMap<Integer, List<Map.Entry<Integer, Double>>> reperimento, String path) throws IOException {
-		PageRank pr = new PageRank(docs, d);
+	public void eseguiReperimentoPageRank(double d, int M, double precisione, HashMap<Integer, List<Map.Entry<Integer, Double>>> reperimento, String path) throws IOException {
+		PageRank pr = new PageRank(docs, d, precisione);
 		HashMap<Integer, Double> pr_valori = pr.getPageRank();
 		
 		HashMap<Integer, HashMap<Integer, Double>> reperimentoPR = new HashMap<Integer, HashMap<Integer,Double>>();

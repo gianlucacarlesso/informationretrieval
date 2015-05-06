@@ -46,6 +46,8 @@ public class InformationRetrieval {
 			HashMap<Integer, ArrayList<String>> stemQuery = Parser.parserQueryStem("./data/query-stem.txt");
 			int M = 1000;
 			int N =30;
+			double d = 0.10;
+			double precisionePageRank = 1.0E-14;
 			Reperimento reperimento = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
 			HashMap<Integer, List<Map.Entry<Integer, Double>>> docsReperiti = reperimento.eseguiReperimento("./data/reperimento.txt", M);
 			// FINE LABORATORIO 3 //
@@ -63,7 +65,7 @@ public class InformationRetrieval {
 			// INIZIO LABORATORIO 5 //
 			
 			Reperimento reperimentoPageRank = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
-			reperimentoPageRank.eseguiReperimentoPageRank(0.10, M, docsReperitiRF_esplicito, "./data/pageRank.txt");
+			reperimentoPageRank.eseguiReperimentoPageRank(d, M, precisionePageRank, docsReperiti, "./data/pageRank.txt");
 			
 			
 			System.out.println("Fine");
