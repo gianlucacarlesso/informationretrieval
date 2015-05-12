@@ -55,18 +55,27 @@ public class InformationRetrieval {
 			// INIZIO LABORATORIO 4 //
 //			reperimento.eseguiRelevanceFeedback("./data/reperimentoRF.txt", docsReperiti, N, M, "./data/qrels-originale.txt");
 			
-			RelevanceFeedback rf_esplicito = new RelevanceFeedback(keywordsQuery, docs, pesiDocs);
-			rf_esplicito.generaNuoveQueriesRF_esplicito(docsReperiti, M, "./data/qrels-originale.txt");
+//			RelevanceFeedback rf_esplicito = new RelevanceFeedback(keywordsQuery, docs, pesiDocs);
+//			rf_esplicito.generaNuoveQueriesRF_esplicito(docsReperiti, M, "./data/qrels-originale.txt");
+//			
+//			Reperimento reperimentoRF_esplicito = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
+//			
+//			HashMap<Integer, List<Map.Entry<Integer, Double>>> docsReperitiRF_esplicito = reperimentoRF_esplicito.eseguiReperimento("./data/reperimentoEsplicito.txt", M);
+//			
+//			// INIZIO LABORATORIO 5 //
+//			
+//			Reperimento reperimentoPageRank = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
+//			reperimentoPageRank.eseguiReperimentoPageRank(d, M, precisionePageRank, docsReperiti, "./data/pageRank.txt");
 			
-			Reperimento reperimentoRF_esplicito = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
+			// FINE LABORATORIO 5 //
 			
-			HashMap<Integer, List<Map.Entry<Integer, Double>>> docsReperitiRF_esplicito = reperimentoRF_esplicito.eseguiReperimento("./data/reperimentoEsplicito.txt", M);
+			// INIZIO LABORATORIO 6 //
 			
-			// INIZIO LABORATORIO 5 //
+			N = 20;
+			Reperimento reperimentoLSA = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
+			reperimentoLSA.eseguiReperimentoLSA(N, docsReperiti, "./data/lsa.txt", docs, keywordsQuery);
 			
-			Reperimento reperimentoPageRank = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
-			reperimentoPageRank.eseguiReperimentoPageRank(d, M, precisionePageRank, docsReperiti, "./data/pageRank.txt");
-			
+			// FINE LABORATORIO 6 //
 			
 			System.out.println("Fine");
 		} catch (IOException e) {

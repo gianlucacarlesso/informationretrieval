@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,6 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import org.apache.commons.io.FileUtils;
+
+import Jama.Matrix;
 
 public class Reperimento {
 	private HashMap<Integer, HashMap<String, Double>> pesiKeywordDocumenti;
@@ -91,13 +96,13 @@ public class Reperimento {
 		}
 
 		// salvo i pesi in un file
-		return scriviPesi(path, reperimento, maxDocsReperiti);
+		return scriviPesi(path, reperimento, maxDocsReperiti, 1);
 	}
 
 	public HashMap<Integer, List<Map.Entry<Integer, Double>>> scriviPesi(
 			String path,
 			HashMap<Integer, HashMap<Integer, Double>> reperimento,
-			int maxDocReperiti) throws IOException {
+			int maxDocReperiti, int npos) throws IOException {
 		FileWriter writer = new FileWriter(path);
 
 		HashMap<Integer, List<Map.Entry<Integer, Double>>> ranking = new HashMap<Integer, List<Entry<Integer, Double>>>();
@@ -142,7 +147,7 @@ public class Reperimento {
 				}
 
 				writer.write(queryID + " Q0 " + entrylist.get(i).getKey() + " "
-						+ (i + 1) + " " + entrylist.get(i).getValue() + " "
+						+ (i + npos) + " " + entrylist.get(i).getValue() + " "
 						+ " GR11R4" + backspace);
 			}
 		}
@@ -240,7 +245,7 @@ public class Reperimento {
 		}
 
 		// salvo i pesi in un file
-		scriviPesi(path, reperimentoRF, M);
+		scriviPesi(path, reperimentoRF, M, 1);
 		return reperimentoRF;
 	}
 	
@@ -264,8 +269,69 @@ public class Reperimento {
 			}
 		}
 		
-		scriviPesi(path, reperimentoPR, M);
+		scriviPesi(path, reperimentoPR, M, 1);
 		
 	}
 	
+	public void eseguiReperimentoLSA(int N, HashMap<Integer, List<Map.Entry<Integer, Double>>> reperimento, String path, HashMap<Integer, Documento> docs, HashMap<Integer, HashMap<String, Double>> keywordsQuery) throws IOException {
+		LSA lsa = new LSA(docs, keywordsQuery, reperimento);
+		
+		HashMap<Integer, HashMap<Integer, Double>> reperimentoLSA = new HashMap<Integer, HashMap<Integer,Double>>();
+		
+		HashMap<Integer, HashMap<Integer, Double>> reperimentoLSA_tmp1 = new HashMap<Integer, HashMap<Integer,Double>>();
+		HashMap<Integer, HashMap<Integer, Double>> reperimentoLSA_tmp2 = new HashMap<Integer, HashMap<Integer,Double>>();
+		
+		// Per ogni query
+		Set<Integer> keys = reperimento.keySet();
+		for(Integer key : keys) {
+			Matrix pesiLSA = lsa.eseguiLSA(N, key);
+			
+			reperimentoLSA.put(key, new HashMap<Integer, Double>());
+			List<Map.Entry<Integer, Double>> listReperiti = reperimento.get(key);
+			for(int i = 0; i < listReperiti.size(); i++) {	
+				if (i < N) {
+					double lsa_valore = pesiLSA.get(i, 0);
+					reperimentoLSA.get(key).put(listReperiti.get(i).getKey(), listReperiti.get(i).getValue() * lsa_valore);
+					
+					if(!reperimentoLSA_tmp1.containsKey(key)) {
+						reperimentoLSA_tmp1.put(key, new HashMap<Integer, Double>());
+					}
+					reperimentoLSA_tmp1.get(key).put(listReperiti.get(i).getKey(), listReperiti.get(i).getValue() * lsa_valore);
+				} else {
+					reperimentoLSA.get(key).put(listReperiti.get(i).getKey(), listReperiti.get(i).getValue());
+					
+					if(!reperimentoLSA_tmp2.containsKey(key)) {
+						reperimentoLSA_tmp2.put(key, new HashMap<Integer, Double>());
+					}
+					reperimentoLSA_tmp2.get(key).put(listReperiti.get(i).getKey(), listReperiti.get(i).getValue());
+				}
+			}
+		}
+		
+
+		scriviPesi("./data/tmp1.txt", reperimentoLSA_tmp1, N, 1);
+		scriviPesi("./data/tmp2.txt", reperimentoLSA_tmp2, reperimento.size() - N, N);
+		concatFile("./data/tmp1.txt", "./data/tmp2.txt", path);
+		
+		//new File("./data/tmp1.txt").delete();
+		//new File("./data/tmp2.txt").delete();
+		
+	}
+	
+	private void concatFile(String path1, String path2, String outPath) throws IOException {
+		// Files to read
+		File file1 = new File(path1);
+		File file2 = new File(path2);
+
+		// File to write
+		File file3 = new File(outPath);
+
+		// Read the file as string
+		String file1Str = FileUtils.readFileToString(file1);
+		String file2Str = FileUtils.readFileToString(file2);
+
+		// Write the file
+		FileUtils.write(file3, file1Str);
+		FileUtils.write(file3, file2Str, true); // true for append
+	}
 }
