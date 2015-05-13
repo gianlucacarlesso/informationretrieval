@@ -73,8 +73,8 @@ public class InformationRetrieval {
 			
 			N = 20;
 			Reperimento reperimentoLSA = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
-			reperimentoLSA.eseguiReperimentoLSA(N, docsReperiti, "./data/lsa.txt", docs, keywordsQuery);
-			
+	    	reperimentoLSA.eseguiReperimentoLSA(N, M, docsReperiti, "./data/lsa.txt", docs, keywordsQuery);
+			reperimentoLSA.concatFile("./data/tmp1.txt", "./data/tmp2.txt", "./data/merge.txt", N, 1000-N);
 			// FINE LABORATORIO 6 //
 			
 			System.out.println("Fine");
