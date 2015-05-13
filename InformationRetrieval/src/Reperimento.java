@@ -99,22 +99,43 @@ public class Reperimento {
 		}
 
 		// salvo i pesi in un file
-		return scriviPesi(path, reperimento, maxDocsReperiti, 1);
+		return scriviPesi(path, reperimento, maxDocsReperiti, 1, "pippo");
 	}
 
 	public HashMap<Integer, List<Map.Entry<Integer, Double>>> scriviPesi(
 			String path,
 			HashMap<Integer, HashMap<Integer, Double>> reperimento,
-			int maxDocReperiti, int npos) throws IOException {
+			int maxDocReperiti, int npos, String QualeParte) throws IOException {
 		FileWriter writer = new FileWriter(path);
 
 		HashMap<Integer, List<Map.Entry<Integer, Double>>> ranking = new HashMap<Integer, List<Entry<Integer, Double>>>();
 
+		//Prendo i documenti rilevanti per implementare l'N variabile dato dal numero di doc rilevanti per ogni query
+		HashMap<Integer, ArrayList<Integer>> docQrels = Parser.parserQrels("./data/qrels-originale.txt");
+		int documentiRilevanti = 0;		
+		
+		System.out.println(docQrels.keySet());
 		Set<Integer> queriesId = reperimento.keySet();
+		System.out.println(queriesId);
 		// Scorro tutte le query
 		for (Integer queryId : queriesId) {
 			// Procedo per ogni
-
+			
+			// in qrels non ci sono tutte le query
+			if (docQrels.keySet().contains(queryId)){
+				documentiRilevanti = docQrels.get(queryId).size();
+			} else {
+				documentiRilevanti = 20;
+			}
+			// solo per metodo 2 (N variabile)
+			if (QualeParte == "prima"){				
+				maxDocReperiti = documentiRilevanti;
+				npos = 1;
+			} else if (QualeParte == "seconda") {
+				maxDocReperiti = 1000 - documentiRilevanti + 1;
+				npos = documentiRilevanti;
+			}
+			
 			Comparator<Map.Entry<Integer, Double>> comp = new Comparator<Map.Entry<Integer, Double>>() {
 
 				@Override
@@ -254,7 +275,7 @@ public class Reperimento {
 		}
 
 		// salvo i pesi in un file
-		scriviPesi(path, reperimentoRF, M, 1);
+		scriviPesi(path, reperimentoRF, M, 1, "pippo");
 		return reperimentoRF;
 	}
 
@@ -284,7 +305,7 @@ public class Reperimento {
 			}
 		}
 
-		scriviPesi(path, reperimentoPR, M, 1);
+		scriviPesi(path, reperimentoPR, M, 1, "pippo");
 
 	}
 
@@ -299,10 +320,20 @@ public class Reperimento {
 
 		HashMap<Integer, HashMap<Integer, Double>> reperimentoLSA_tmp1 = new HashMap<Integer, HashMap<Integer, Double>>();
 		HashMap<Integer, HashMap<Integer, Double>> reperimentoLSA_tmp2 = new HashMap<Integer, HashMap<Integer, Double>>();
+		
+		//Prendo i documenti rilevanti per implementare l'N variabile dato dal numero di doc rilevanti per ogni query
+		HashMap<Integer, ArrayList<Integer>> docQrels = Parser.parserQrels("./data/qrels-originale.txt");
 
 		// Per ogni query
 		Set<Integer> keys = reperimento.keySet();
 		for (Integer key : keys) {
+			if (docQrels.keySet().contains(key)){
+				N = docQrels.get(key).size();
+			} else {
+				N = 20;
+			}
+			
+			
 			Matrix pesiLSA = lsa.eseguiLSA(N, key);
 			Thread.sleep(2000);
 			reperimentoLSA.put(key, new HashMap<Integer, Double>());
@@ -336,8 +367,8 @@ public class Reperimento {
 			}
 		}
 
-		scriviPesi("./data/tmp1.txt", reperimentoLSA_tmp1, N, 1);
-		scriviPesi("./data/tmp2.txt", reperimentoLSA_tmp2, M - N + 1, N);
+		scriviPesi("./data/tmp1.txt", reperimentoLSA_tmp1, N, 1, "prima");
+		scriviPesi("./data/tmp2.txt", reperimentoLSA_tmp2, M - N + 1, N, "seconda");
 		concatFile("./data/tmp1.txt", "./data/tmp2.txt", path, N,
 				M - N + 1);
 
@@ -351,20 +382,33 @@ public class Reperimento {
 		BufferedReader inFile1 = new BufferedReader(new FileReader(path1));
 		BufferedReader inFile2 = new BufferedReader(new FileReader(path2));
 
+		//Prendo i documenti rilevanti per implementare l'N variabile dato dal numero di doc rilevanti per ogni query
+		HashMap<Integer, ArrayList<Integer>> docQrels = Parser.parserQrels("./data/qrels-originale.txt");
+		
 		// File to write
 		BufferedWriter outFile = new BufferedWriter(new FileWriter(outPath));
 		String lineFile1 = "";
 		String lineFile2 = "";
 		int countFile1 = 0;
 		int countFile2 = 0;
+		int queryEsaminata = 0;
+		int numeroDocRilevanti = 20;
 		while ((lineFile1 = inFile1.readLine()) != null) {
 			countFile1++;
 
 			outFile.write(lineFile1 + "\n");
-
-			if (countFile1 == N) {
+			
+			
+			
+			if (docQrels.keySet().contains(queryEsaminata)){
+				numeroDocRilevanti = docQrels.get(queryEsaminata).size();
+			} else {
+				numeroDocRilevanti = 20;
+			}
+			
+			if (countFile1 == numeroDocRilevanti) {
 				countFile2 = 0;
-				while ((lineFile2 = inFile2.readLine()) != null && countFile2 < M) {
+				while ((lineFile2 = inFile2.readLine()) != null && countFile2 < 1000 - numeroDocRilevanti) {
 					countFile2++;
 
 					outFile.write(lineFile2 + "\n");
@@ -372,7 +416,7 @@ public class Reperimento {
 
 				countFile1 = 0;
 			}
-
+			queryEsaminata = queryEsaminata + 1;
 		}
 
 		inFile1.close();
