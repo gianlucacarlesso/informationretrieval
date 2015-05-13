@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -291,7 +292,7 @@ public class Reperimento {
 			HashMap<Integer, List<Map.Entry<Integer, Double>>> reperimento,
 			String path, HashMap<Integer, Documento> docs,
 			HashMap<Integer, HashMap<String, Double>> keywordsQuery)
-			throws IOException {
+			throws IOException, InterruptedException {
 		LSA lsa = new LSA(docs, keywordsQuery, reperimento);
 
 		HashMap<Integer, HashMap<Integer, Double>> reperimentoLSA = new HashMap<Integer, HashMap<Integer, Double>>();
@@ -303,7 +304,7 @@ public class Reperimento {
 		Set<Integer> keys = reperimento.keySet();
 		for (Integer key : keys) {
 			Matrix pesiLSA = lsa.eseguiLSA(N, key);
-
+			Thread.sleep(2000);
 			reperimentoLSA.put(key, new HashMap<Integer, Double>());
 			List<Map.Entry<Integer, Double>> listReperiti = reperimento
 					.get(key);
@@ -340,8 +341,8 @@ public class Reperimento {
 		concatFile("./data/tmp1.txt", "./data/tmp2.txt", path, N,
 				M - N + 1);
 
-		// new File("./data/tmp1.txt").delete();
-		// new File("./data/tmp2.txt").delete();
+		new File("./data/tmp1.txt").delete();
+		new File("./data/tmp2.txt").delete();
 
 	}
 
