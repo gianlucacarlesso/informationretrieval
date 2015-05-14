@@ -3,9 +3,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import Jama.Matrix;
-
 import org.jblas.DoubleMatrix;
+import org.jblas.Singular;
 
 public class LSA {
 	private HashMap<Integer, Documento> docs;
@@ -45,11 +44,11 @@ public class LSA {
 		return righeKeywords;
 	}
 
-	private Matrix costruisciMatriceX(Integer queryId,
+	private DoubleMatrix costruisciMatriceX(Integer queryId,
 			HashMap<Integer, List<Map.Entry<Integer, Double>>> reperimento,
 			int N, HashMap<String, Integer> righeKeywords) {
 
-		Matrix matriceX = new Matrix(righeKeywords.size(), N, 0.0);
+		DoubleMatrix matriceX = DoubleMatrix.zeros(righeKeywords.size(), N);
 
 		List<Map.Entry<Integer, Double>> docReperiti = reperimento.get(queryId);
 
@@ -61,67 +60,67 @@ public class LSA {
 				// riga della matrice
 				int posKey = righeKeywords.get(key);
 
-				matriceX.set(posKey, i, 1.0);
+				matriceX.put(posKey, i, 1.0);
 			}
 		}
 
 		return matriceX;
 	}
 
-	private Matrix costruisciVettoreY(Integer queryId,
+	private DoubleMatrix costruisciVettoreY(Integer queryId,
 			HashMap<Integer, List<Map.Entry<Integer, Double>>> reperimento,
 			int N, HashMap<String, Integer> righeKeywords) {
 
-		Matrix vettoreY = new Matrix(righeKeywords.size(), 1, 0.0);
+		DoubleMatrix vettoreY = DoubleMatrix.zeros(righeKeywords.size(), 1);
 
 		Set<String> keys = righeKeywords.keySet();
 		for (String k : keys) {
 			if (keywordsQueries.get(queryId).containsKey(k)) {
 				int posKey = righeKeywords.get(k);
-				vettoreY.set(posKey, 0, 1.0);
+				vettoreY.put(posKey, 0, 1.0);
 			}
 		}
 
 		return vettoreY;
 	}
 
-	private Matrix costruisciMatriceS(Matrix x) {
-		Matrix xx_t = x.times(x.transpose());
-		Matrix v_t = xx_t.svd().getV();
-		System.out.println(v_t.getRowDimension());
-		System.out.println(v_t.getColumnDimension());
+	private DoubleMatrix costruisciMatriceS(DoubleMatrix x) {
+		DoubleMatrix xx_t = x.mmul(x.transpose());
+		DoubleMatrix v_t = Singular.fullSVD(xx_t)[2];
+		System.out.println(v_t.rows);
+		System.out.println(v_t.columns);
 		return v_t;
 	}
 
-	public Matrix eseguiLSA(int N, int queryId) {
+	public DoubleMatrix eseguiLSA(int N, int queryId) {
 		HashMap<String, Integer> righeKeywords = creaRigheKeywordsMatrice(
 				queryId, docsReperiti, N);
 
 		System.out.println(righeKeywords.size());
 
-		Matrix x = costruisciMatriceX(queryId, docsReperiti, N, righeKeywords);
-		Matrix y = costruisciVettoreY(queryId, docsReperiti, N, righeKeywords);
+		DoubleMatrix x = costruisciMatriceX(queryId, docsReperiti, N, righeKeywords);
+		DoubleMatrix y = costruisciVettoreY(queryId, docsReperiti, N, righeKeywords);
 
-		Matrix v_t = costruisciMatriceS(x);
+		DoubleMatrix v_t = costruisciMatriceS(x);
 
-		Matrix v1 = v_t.getMatrix(0, righeKeywords.size() - 1, 0, 0);
-		Matrix v2 = v_t.getMatrix(0, righeKeywords.size() - 1, 1, 1);
+		DoubleMatrix v1 = v_t.getColumn(0); // v_t.getMatrix(0, righeKeywords.size() - 1, 0, 0);
+		DoubleMatrix v2 = v_t.getColumn(1); // v_t.getMatrix(0, righeKeywords.size() - 1, 1, 1);
 
-		Matrix newy_y1 = (v1.transpose()).times(y);
-		Matrix newy_y2 = (v2.transpose()).times(y);
+		DoubleMatrix newy_y1 = (v1.transpose()).mmul(y);
+		DoubleMatrix newy_y2 = (v2.transpose()).mmul(y);
 
-		Matrix newY = new Matrix(2, 1);
-		newY.set(0, 0, newy_y1.get(0, 0));
-		newY.set(1, 0, newy_y2.get(0, 0));
+		DoubleMatrix newY = new DoubleMatrix(2, 1);
+		newY.put(0, 0, newy_y1.get(0, 0));
+		newY.put(1, 0, newy_y2.get(0, 0));
 
-		Matrix newy_x1 = (v1.transpose()).times(x);
-		Matrix newy_x2 = (v2.transpose()).times(x);
+		DoubleMatrix newy_x1 = (v1.transpose()).mmul(x);
+		DoubleMatrix newy_x2 = (v2.transpose()).mmul(x);
 
-		Matrix newX = new Matrix(2, N);
-		newX.setMatrix(0, 0, 0, N - 1, newy_x1);
-		newX.setMatrix(1, 1, 0, N - 1, newy_x2);
+		DoubleMatrix newX = new DoubleMatrix(2, N);
+		newX.putRow(0, newy_x1); // setMatrix(0, 0, 0, N - 1, newy_x1);
+		newX.putRow(0, newy_x2); // setMatrix(1, 1, 0, N - 1, newy_x2);
 
-		return (newX.transpose()).times(newY);
+		return (newX.transpose()).mmul(newY);
 	}
 
 }

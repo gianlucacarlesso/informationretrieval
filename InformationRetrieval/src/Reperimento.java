@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import Jama.Matrix;
+import org.jblas.DoubleMatrix;
 
 public class Reperimento {
 	private HashMap<Integer, HashMap<String, Double>> pesiKeywordDocumenti;
@@ -337,7 +337,7 @@ public class Reperimento {
 				N = 20;
 			}
 
-			Matrix pesiLSA = lsa.eseguiLSA(N, key);
+			DoubleMatrix pesiLSA = lsa.eseguiLSA(N, key);
 			reperimentoLSA.put(key, new HashMap<Integer, Double>());
 			List<Map.Entry<Integer, Double>> listReperiti = reperimento
 					.get(key);
