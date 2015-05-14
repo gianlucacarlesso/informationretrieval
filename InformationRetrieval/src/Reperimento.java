@@ -110,32 +110,34 @@ public class Reperimento {
 
 		HashMap<Integer, List<Map.Entry<Integer, Double>>> ranking = new HashMap<Integer, List<Entry<Integer, Double>>>();
 
-		//Prendo i documenti rilevanti per implementare l'N variabile dato dal numero di doc rilevanti per ogni query
-		HashMap<Integer, ArrayList<Integer>> docQrels = Parser.parserQrels("./data/qrels-originale.txt");
-		int documentiRilevanti = 0;		
-		
+		// Prendo i documenti rilevanti per implementare l'N variabile dato dal
+		// numero di doc rilevanti per ogni query
+		HashMap<Integer, ArrayList<Integer>> docQrels = Parser
+				.parserQrels("./data/qrels-originale.txt");
+		int documentiRilevanti = 0;
+
 		System.out.println(docQrels.keySet());
 		Set<Integer> queriesId = reperimento.keySet();
 		System.out.println(queriesId);
 		// Scorro tutte le query
 		for (Integer queryId : queriesId) {
 			// Procedo per ogni
-			
+
 			// in qrels non ci sono tutte le query
-			if (docQrels.keySet().contains(queryId)){
+			if (docQrels.keySet().contains(queryId)) {
 				documentiRilevanti = docQrels.get(queryId).size();
 			} else {
 				documentiRilevanti = 20;
 			}
 			// solo per metodo 2 (N variabile)
-			if (QualeParte == "prima"){				
+			if (QualeParte == "prima") {
 				maxDocReperiti = documentiRilevanti;
 				npos = 1;
 			} else if (QualeParte == "seconda") {
 				maxDocReperiti = 1000 - documentiRilevanti + 1;
 				npos = documentiRilevanti;
 			}
-			
+
 			Comparator<Map.Entry<Integer, Double>> comp = new Comparator<Map.Entry<Integer, Double>>() {
 
 				@Override
@@ -164,15 +166,15 @@ public class Reperimento {
 				}
 				queryID += queryId;
 
-//				if ((i + 1) < entrylist.size()) {
-//					backspace = "\n";
-//				} else {
-//					backspace = "";
-//				}
+				// if ((i + 1) < entrylist.size()) {
+				// backspace = "\n";
+				// } else {
+				// backspace = "";
+				// }
 
 				writer.write(queryID + " Q0 " + entrylist.get(i).getKey() + " "
 						+ (i + npos) + " " + entrylist.get(i).getValue() + " "
-						+ " GR11R4" + backspace);
+						+ " GR11R0" + backspace);
 			}
 		}
 
@@ -309,7 +311,7 @@ public class Reperimento {
 
 	}
 
-	public void eseguiReperimentoLSA(int N, int M, 
+	public void eseguiReperimentoLSA(int N, int M,
 			HashMap<Integer, List<Map.Entry<Integer, Double>>> reperimento,
 			String path, HashMap<Integer, Documento> docs,
 			HashMap<Integer, HashMap<String, Double>> keywordsQuery)
@@ -320,22 +322,22 @@ public class Reperimento {
 
 		HashMap<Integer, HashMap<Integer, Double>> reperimentoLSA_tmp1 = new HashMap<Integer, HashMap<Integer, Double>>();
 		HashMap<Integer, HashMap<Integer, Double>> reperimentoLSA_tmp2 = new HashMap<Integer, HashMap<Integer, Double>>();
-		
-		//Prendo i documenti rilevanti per implementare l'N variabile dato dal numero di doc rilevanti per ogni query
-		HashMap<Integer, ArrayList<Integer>> docQrels = Parser.parserQrels("./data/qrels-originale.txt");
+
+		// Prendo i documenti rilevanti per implementare l'N variabile dato dal
+		// numero di doc rilevanti per ogni query
+		HashMap<Integer, ArrayList<Integer>> docQrels = Parser
+				.parserQrels("./data/qrels-originale.txt");
 
 		// Per ogni query
 		Set<Integer> keys = reperimento.keySet();
 		for (Integer key : keys) {
-			if (docQrels.keySet().contains(key)){
+			if (docQrels.keySet().contains(key)) {
 				N = docQrels.get(key).size();
 			} else {
 				N = 20;
 			}
-			
-			
+
 			Matrix pesiLSA = lsa.eseguiLSA(N, key);
-			Thread.sleep(2000);
 			reperimentoLSA.put(key, new HashMap<Integer, Double>());
 			List<Map.Entry<Integer, Double>> listReperiti = reperimento
 					.get(key);
@@ -368,12 +370,12 @@ public class Reperimento {
 		}
 
 		scriviPesi("./data/tmp1.txt", reperimentoLSA_tmp1, N, 1, "prima");
-		scriviPesi("./data/tmp2.txt", reperimentoLSA_tmp2, M - N + 1, N, "seconda");
-		concatFile("./data/tmp1.txt", "./data/tmp2.txt", path, N,
-				M - N + 1);
+		scriviPesi("./data/tmp2.txt", reperimentoLSA_tmp2, M - N + 1, N,
+				"seconda");
+		concatFile("./data/tmp1.txt", "./data/tmp2.txt", path, N, M - N + 1);
 
-		new File("./data/tmp1.txt").delete();
-		new File("./data/tmp2.txt").delete();
+		// new File("./data/tmp1.txt").delete();
+		// new File("./data/tmp2.txt").delete();
 
 	}
 
@@ -382,41 +384,46 @@ public class Reperimento {
 		BufferedReader inFile1 = new BufferedReader(new FileReader(path1));
 		BufferedReader inFile2 = new BufferedReader(new FileReader(path2));
 
-		//Prendo i documenti rilevanti per implementare l'N variabile dato dal numero di doc rilevanti per ogni query
-		HashMap<Integer, ArrayList<Integer>> docQrels = Parser.parserQrels("./data/qrels-originale.txt");
-		
+		// Prendo i documenti rilevanti per implementare l'N variabile dato dal
+		// numero di doc rilevanti per ogni query
+		HashMap<Integer, ArrayList<Integer>> docQrels = Parser
+				.parserQrels("./data/qrels-originale.txt");
+
 		// File to write
 		BufferedWriter outFile = new BufferedWriter(new FileWriter(outPath));
 		String lineFile1 = "";
 		String lineFile2 = "";
-		int countFile1 = 0;
+		int countFile1 = 20;
 		int countFile2 = 0;
-		int queryEsaminata = 0;
+		int queryEsaminata = 1;
 		int numeroDocRilevanti = 20;
 		while ((lineFile1 = inFile1.readLine()) != null) {
+
+			if (countFile1 + 1 > numeroDocRilevanti) {
+				countFile1 = 0;
+				
+				if (docQrels.keySet().contains(queryEsaminata)) {
+					numeroDocRilevanti = docQrels.get(queryEsaminata).size();
+				} else {
+					numeroDocRilevanti = 20;
+				}
+			}
+
 			countFile1++;
 
 			outFile.write(lineFile1 + "\n");
-			
-			
-			
-			if (docQrels.keySet().contains(queryEsaminata)){
-				numeroDocRilevanti = docQrels.get(queryEsaminata).size();
-			} else {
-				numeroDocRilevanti = 20;
-			}
-			
+
 			if (countFile1 == numeroDocRilevanti) {
 				countFile2 = 0;
-				while ((lineFile2 = inFile2.readLine()) != null && countFile2 < 1000 - numeroDocRilevanti) {
+				while ((lineFile2 = inFile2.readLine()) != null
+						&& countFile2 < (1000 - numeroDocRilevanti + 1)) {
 					countFile2++;
 
 					outFile.write(lineFile2 + "\n");
 				}
 
-				countFile1 = 0;
+				queryEsaminata = queryEsaminata + 1;
 			}
-			queryEsaminata = queryEsaminata + 1;
 		}
 
 		inFile1.close();

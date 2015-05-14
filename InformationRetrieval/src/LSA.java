@@ -5,6 +5,8 @@ import java.util.Set;
 
 import Jama.Matrix;
 
+import org.jblas.DoubleMatrix;
+
 public class LSA {
 	private HashMap<Integer, Documento> docs;
 	private HashMap<Integer, HashMap<String, Double>> keywordsQueries;
