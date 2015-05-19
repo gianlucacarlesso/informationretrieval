@@ -118,7 +118,7 @@ public class LSA {
 
 		DoubleMatrix newX = new DoubleMatrix(2, N);
 		newX.putRow(0, newy_x1); // setMatrix(0, 0, 0, N - 1, newy_x1);
-		newX.putRow(0, newy_x2); // setMatrix(1, 1, 0, N - 1, newy_x2);
+		newX.putRow(1, newy_x2); // setMatrix(1, 1, 0, N - 1, newy_x2);
 
 		return (newX.transpose()).mmul(newY);
 	}
