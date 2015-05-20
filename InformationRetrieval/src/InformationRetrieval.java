@@ -71,11 +71,16 @@ public class InformationRetrieval {
 			
 			// INIZIO LABORATORIO 6 //
 			
-			N = 20;
-			Reperimento reperimentoLSA = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
-	    	reperimentoLSA.eseguiReperimentoLSA(N, M, docsReperiti, "./data/lsa.txt", docs, keywordsQuery);
-		//	reperimentoLSA.concatFile("./data/tmp1.txt", "./data/tmp2.txt", "./data/merge.txt", N, M - N);
+//			N = 20;
+//			Reperimento reperimentoLSA = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
+//	    	reperimentoLSA.eseguiReperimentoLSA(N, M, docsReperiti, "./data/lsa.txt", docs, keywordsQuery);
 			// FINE LABORATORIO 6 //
+			
+			// INIZIO LABORATORIO 7 //
+			N = 50;
+			Reperimento reperimentoHITS = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
+	    	reperimentoHITS.eseguiReperimentoHITS(N, M, docsReperiti, "./data/hits.txt", docs, keywordsQuery);			
+			// FINE LABORATORIO 7 //
 			
 			System.out.println("Fine");
 		} catch (IOException e) {

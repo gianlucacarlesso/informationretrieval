@@ -1,6 +1,5 @@
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -343,7 +342,8 @@ public class Reperimento {
 					.get(key);
 			for (int i = 0; i < listReperiti.size(); i++) {
 				if (i < N) {
-					double lsa_valore = 1 + pesiLSA.get(i, 0);
+					System.out.println(pesiLSA.get(i,0));
+					double lsa_valore = 1+pesiLSA.get(i, 0);//Math.exp(pesiLSA.get(i, 0));
 					reperimentoLSA.get(key).put(listReperiti.get(i).getKey(),
 							listReperiti.get(i).getValue() * lsa_valore);
 
@@ -429,5 +429,67 @@ public class Reperimento {
 		inFile1.close();
 		inFile2.close();
 		outFile.close();
+	}
+	
+	public void eseguiReperimentoHITS(int N, int M, 
+			HashMap<Integer, List<Map.Entry<Integer, Double>>> reperimento,
+			String path, HashMap<Integer, Documento> docs,
+			HashMap<Integer, HashMap<String, Double>> keywordsQuery)
+			throws IOException, InterruptedException {
+		HITS hits = new HITS(docs, reperimento);
+
+		HashMap<Integer, HashMap<Integer, Double>> reperimentoHITS = new HashMap<Integer, HashMap<Integer, Double>>();
+
+		HashMap<Integer, HashMap<Integer, Double>> reperimentoHITS_tmp1 = new HashMap<Integer, HashMap<Integer, Double>>();
+		HashMap<Integer, HashMap<Integer, Double>> reperimentoHITS_tmp2 = new HashMap<Integer, HashMap<Integer, Double>>();
+
+		// Per ogni query
+		Set<Integer> keys = reperimento.keySet();
+		for (Integer queryId : keys) {
+			// Calcolo il coefficiente dato da HITS per la query in esame
+			HashMap<Integer, Double> pesiHITS = hits.calcoloPesiCentralitaAutorevolezza(queryId, N);
+			
+			reperimentoHITS.put(queryId, new HashMap<Integer, Double>());
+			List<Map.Entry<Integer, Double>> listReperiti = reperimento
+					.get(queryId);
+			
+			for (int i = 0; i < listReperiti.size(); i++) {
+				if (i < N) {
+					// Recupero il coefficiente dato da hits per i primi N doc
+					double hits_valore = 1 + pesiHITS.get(listReperiti.get(i).getKey());
+					
+					reperimentoHITS.get(queryId).put(listReperiti.get(i).getKey(),
+							listReperiti.get(i).getValue() * hits_valore);
+
+					if (!reperimentoHITS_tmp1.containsKey(queryId)) {
+						reperimentoHITS_tmp1.put(queryId,
+								new HashMap<Integer, Double>());
+					}
+					reperimentoHITS_tmp1.get(queryId).put(
+							listReperiti.get(i).getKey(),
+							listReperiti.get(i).getValue() * hits_valore);
+				} else {
+					reperimentoHITS.get(queryId).put(listReperiti.get(i).getKey(),
+							listReperiti.get(i).getValue());
+
+					if (!reperimentoHITS_tmp2.containsKey(queryId)) {
+						reperimentoHITS_tmp2.put(queryId,
+								new HashMap<Integer, Double>());
+					}
+					reperimentoHITS_tmp2.get(queryId).put(
+							listReperiti.get(i).getKey(),
+							listReperiti.get(i).getValue());
+				}
+			}
+		}
+
+		scriviPesi("./data/tmp1.txt", reperimentoHITS_tmp1, N, 1, "prima");
+		scriviPesi("./data/tmp2.txt", reperimentoHITS_tmp2, M - N + 1, N,
+				"seconda");
+		concatFile("./data/tmp1.txt", "./data/tmp2.txt", path, N, M - N + 1);
+
+		// new File("./data/tmp1.txt").delete();
+		// new File("./data/tmp2.txt").delete();
+
 	}
 }

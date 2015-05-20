@@ -86,7 +86,7 @@ public class LSA {
 
 	private DoubleMatrix costruisciMatriceS(DoubleMatrix x) {
 		DoubleMatrix xx_t = x.mmul(x.transpose());
-		DoubleMatrix v_t = Singular.fullSVD(xx_t)[2];
+		DoubleMatrix v_t = (Singular.fullSVD(xx_t)[2]);
 		System.out.println(v_t.rows);
 		System.out.println(v_t.columns);
 		return v_t;
@@ -95,8 +95,6 @@ public class LSA {
 	public DoubleMatrix eseguiLSA(int N, int queryId) {
 		HashMap<String, Integer> righeKeywords = creaRigheKeywordsMatrice(
 				queryId, docsReperiti, N);
-
-		System.out.println(righeKeywords.size());
 
 		DoubleMatrix x = costruisciMatriceX(queryId, docsReperiti, N, righeKeywords);
 		DoubleMatrix y = costruisciVettoreY(queryId, docsReperiti, N, righeKeywords);
