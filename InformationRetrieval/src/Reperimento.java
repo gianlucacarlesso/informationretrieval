@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -488,8 +489,8 @@ public class Reperimento {
 				"seconda");
 		concatFile("./data/tmp1.txt", "./data/tmp2.txt", path, N, M - N + 1);
 
-		// new File("./data/tmp1.txt").delete();
-		// new File("./data/tmp2.txt").delete();
+		new File("./data/tmp1.txt").delete();
+		new File("./data/tmp2.txt").delete();
 
 	}
 }
