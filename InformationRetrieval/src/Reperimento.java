@@ -16,6 +16,12 @@ import java.util.Set;
 import org.jblas.DoubleMatrix;
 
 public class Reperimento {
+	public static int LSA_N_FISSO = 0;
+	public static int LSA_N = 20;
+	public static int LSA_N_DOCS_RILEVANTI = 1;
+	public static int LSA_N_DOCS_PESO_MAX = 2;
+	public static double LSA_N_DOCS_PESO_MAX_PERCENT = 10;
+
 	private HashMap<Integer, HashMap<String, Double>> pesiKeywordDocumenti;
 	private HashMap<Integer, HashMap<String, Double>> keywordsQuery;
 	private HashMap<Integer, ArrayList<String>> stemQuery;
@@ -99,44 +105,22 @@ public class Reperimento {
 		}
 
 		// salvo i pesi in un file
-		return scriviPesi(path, reperimento, maxDocsReperiti, 1, "pippo");
+		return scriviPesi(path, reperimento, maxDocsReperiti, 1);
 	}
 
 	public HashMap<Integer, List<Map.Entry<Integer, Double>>> scriviPesi(
 			String path,
 			HashMap<Integer, HashMap<Integer, Double>> reperimento,
-			int maxDocReperiti, int npos, String QualeParte) throws IOException {
+			int maxDocReperiti, int npos) throws IOException {
 		FileWriter writer = new FileWriter(path);
 
 		HashMap<Integer, List<Map.Entry<Integer, Double>>> ranking = new HashMap<Integer, List<Entry<Integer, Double>>>();
 
-		// Prendo i documenti rilevanti per implementare l'N variabile dato dal
-		// numero di doc rilevanti per ogni query
-		HashMap<Integer, ArrayList<Integer>> docQrels = Parser
-				.parserQrels("./data/qrels-originale.txt");
-		int documentiRilevanti = maxDocReperiti;
-
-		System.out.println(docQrels.keySet());
 		Set<Integer> queriesId = reperimento.keySet();
-		System.out.println(queriesId);
+
 		// Scorro tutte le query
 		for (Integer queryId : queriesId) {
 			// Procedo per ogni
-
-//			// in qrels non ci sono tutte le query
-//			if (docQrels.keySet().contains(queryId)) {
-//				documentiRilevanti = docQrels.get(queryId).size();
-//			} else {
-//				documentiRilevanti = 20;
-//			}
-//			// solo per metodo 2 (N variabile)
-//			if (QualeParte == "prima") {
-//				maxDocReperiti = documentiRilevanti;
-//				npos = 1;
-//			} else if (QualeParte == "seconda") {
-//				maxDocReperiti = 1000 - documentiRilevanti + 1;
-//				npos = documentiRilevanti;
-//			}
 
 			Comparator<Map.Entry<Integer, Double>> comp = new Comparator<Map.Entry<Integer, Double>>() {
 
@@ -165,12 +149,6 @@ public class Reperimento {
 					queryID = "0";
 				}
 				queryID += queryId;
-
-				// if ((i + 1) < entrylist.size()) {
-				// backspace = "\n";
-				// } else {
-				// backspace = "";
-				// }
 
 				writer.write(queryID + " Q0 " + entrylist.get(i).getKey() + " "
 						+ (i + npos) + " " + entrylist.get(i).getValue() + " "
@@ -277,7 +255,7 @@ public class Reperimento {
 		}
 
 		// salvo i pesi in un file
-		scriviPesi(path, reperimentoRF, M, 1, "pippo");
+		scriviPesi(path, reperimentoRF, M, 1);
 		return reperimentoRF;
 	}
 
@@ -307,15 +285,16 @@ public class Reperimento {
 			}
 		}
 
-		scriviPesi(path, reperimentoPR, M, 1, "pippo");
+		scriviPesi(path, reperimentoPR, M, 1);
 
 	}
 
-	public void eseguiReperimentoLSA(int N, int M,
+	public void eseguiReperimentoLSA(int M,
 			HashMap<Integer, List<Map.Entry<Integer, Double>>> reperimento,
 			String path, HashMap<Integer, Documento> docs,
-			HashMap<Integer, HashMap<String, Double>> keywordsQuery)
-			throws IOException, InterruptedException {
+			HashMap<Integer, HashMap<String, Double>> keywordsQuery,
+			int versione) throws IOException, InterruptedException {
+
 		LSA lsa = new LSA(docs, keywordsQuery, reperimento);
 
 		HashMap<Integer, HashMap<Integer, Double>> reperimentoLSA = new HashMap<Integer, HashMap<Integer, Double>>();
@@ -323,19 +302,28 @@ public class Reperimento {
 		HashMap<Integer, HashMap<Integer, Double>> reperimentoLSA_tmp1 = new HashMap<Integer, HashMap<Integer, Double>>();
 		HashMap<Integer, HashMap<Integer, Double>> reperimentoLSA_tmp2 = new HashMap<Integer, HashMap<Integer, Double>>();
 
-		// Prendo i documenti rilevanti per implementare l'N variabile dato dal
-		// numero di doc rilevanti per ogni query
-		HashMap<Integer, ArrayList<Integer>> docQrels = Parser
-				.parserQrels("./data/qrels-originale.txt");
-
 		// Per ogni query
 		Set<Integer> keys = reperimento.keySet();
+		int N = 0;
 		for (Integer key : keys) {
-			// if (docQrels.keySet().contains(key)) {
-			// N = docQrels.get(key).size();
-			// } else {
-			// N = 20;
-			// }
+
+			switch (versione) {
+			case 1:
+				HashMap<Integer, ArrayList<Integer>> docQrels = Parser
+						.parserQrels("./data/qrels-originale.txt");
+				if(docQrels.containsKey(key)) {
+					N = docQrels.get(key).size();
+				} else {
+					N = Reperimento.LSA_N;
+				}
+				break;
+			case 2:
+				N = contaDocRilevantiConMaxValore(reperimento,
+						LSA_N_DOCS_PESO_MAX_PERCENT, key);
+				break;
+			default:
+				N = LSA_N;
+			}
 
 			DoubleMatrix pesiLSA = lsa.eseguiLSA(N, key);
 			reperimentoLSA.put(key, new HashMap<Integer, Double>());
@@ -369,66 +357,89 @@ public class Reperimento {
 							listReperiti.get(i).getValue());
 				}
 			}
+
+			// Scrivo i file dei pesi dei documenti per ogni query
+			scriviPesi("./data/" + key + "_1.txt", reperimentoLSA_tmp1, N, 1);
+			scriviPesi("./data/" + key + "_2.txt", reperimentoLSA_tmp2, M - N, N + 1);
+			concatFile("./data/" + key + "_1.txt", "./data/" + key + "_2.txt",
+					"./data/" + key + ".txt");
+			new File("./data/" + key + "_1.txt").delete();
+			new File("./data/" + key + "_2.txt").delete();
+
+			reperimentoLSA_tmp1 = new HashMap<Integer, HashMap<Integer, Double>>();
+			reperimentoLSA_tmp2 = new HashMap<Integer, HashMap<Integer, Double>>();
 		}
 
-		scriviPesi("./data/tmp1.txt", reperimentoLSA_tmp1, N, 1, "prima");
-		scriviPesi("./data/tmp2.txt", reperimentoLSA_tmp2, M - N + 1, N + 1,
-				"seconda");
-		concatFile("./data/tmp1.txt", "./data/tmp2.txt", path, N, M);
-
-		new File("./data/tmp1.txt").delete();
-		new File("./data/tmp2.txt").delete();
-
+		FileWriter writer = new FileWriter(path);
+		Integer oldKey = 0;
+		String firstFile = "";
+		for (Integer key : keys) {
+			if(oldKey == 0) {
+				firstFile = "./data/" + key + ".txt";
+			} else {
+				concatFile(firstFile, "./data/" + key + ".txt", "./data/" + key + "_c.txt");
+				
+				new File(firstFile).delete();
+				new File("./data/" + key + ".txt").delete();
+				
+				firstFile = "./data/" + key + "_c.txt";
+			}
+			oldKey = key;
+		}
+		new File(firstFile).renameTo(new File(path));
+		
+		writer.close();
 	}
 
-	public void concatFile(String path1, String path2, String outPath, int N,
-			int M) throws IOException {
+	private int contaDocRilevantiConMaxValore(
+			HashMap<Integer, List<Map.Entry<Integer, Double>>> reperimento,
+			double percentuale, int queryId) {
+		double valore = reperimento.get(queryId).get(0).getValue();
+		valore -= valore * percentuale / 100.0;
+		int numDocs = 0;
+		for (int i = 0; i < reperimento.get(queryId).size(); i++) {
+			if (reperimento.get(queryId).get(i).getValue() > valore) {
+				numDocs++;
+			} else {
+				i = reperimento.get(queryId).size();
+			}
+		}
+		return numDocs;
+	}
+
+	public void concatFile(String path1, String path2, String outPath)
+			throws IOException {
 		BufferedReader inFile1 = new BufferedReader(new FileReader(path1));
 		BufferedReader inFile2 = new BufferedReader(new FileReader(path2));
 
-		// Prendo i documenti rilevanti per implementare l'N variabile dato dal
-		// numero di doc rilevanti per ogni query
-		HashMap<Integer, ArrayList<Integer>> docQrels = Parser
-				.parserQrels("./data/qrels-originale.txt");
-
 		// File to write
-		BufferedWriter outFile = new BufferedWriter(new FileWriter(outPath));
+		BufferedWriter outFile = new BufferedWriter(new FileWriter(
+				"./data/concatTmp.txt"));
 		String lineFile1 = "";
 		String lineFile2 = "";
-		int countFile1 = 0;
-		int countFile2 = 0;
-		int queryEsaminata = 1;
-		int numeroDocRilevanti = N;
+
 		while ((lineFile1 = inFile1.readLine()) != null) {
-
-			if (countFile1 == numeroDocRilevanti) {
-
-				// if (docQrels.keySet().contains(queryEsaminata)) {
-				// numeroDocRilevanti = docQrels.get(queryEsaminata).size();
-				// } else {
-				// numeroDocRilevanti = 20;
-				// }
-
-				countFile2 = 0;
-				while ((lineFile2 = inFile2.readLine()) != null
-						&& countFile2 < (M - numeroDocRilevanti)) {
-					if(countFile2+1==949)
-						countFile2 = countFile2;
-					outFile.write(lineFile2 + "\n");
-					countFile2++;
-				}
-
-				countFile1 = 0;
-				queryEsaminata = queryEsaminata + 1;
-			}
-			
 			outFile.write(lineFile1 + "\n");
-			countFile1++;
+		}
+
+		while ((lineFile2 = inFile2.readLine()) != null) {
+			outFile.write(lineFile2 + "\n");
 		}
 
 		inFile1.close();
 		inFile2.close();
 		outFile.close();
+
+		// Copio i dati del file temporaneo concatTmp nel path del file outPath
+		inFile1 = new BufferedReader(new FileReader("./data/concatTmp.txt"));
+		outFile = new BufferedWriter(new FileWriter(outPath));
+		while ((lineFile1 = inFile1.readLine()) != null) {
+			outFile.write(lineFile1 + "\n");
+		}
+		inFile1.close();
+		outFile.close();
+		
+		new File("./data/concatTmp.txt").delete();
 	}
 
 	public void eseguiReperimentoHITS(int N, int M,
@@ -485,15 +496,37 @@ public class Reperimento {
 							listReperiti.get(i).getValue());
 				}
 			}
+
+			// Scrivo i file dei pesi dei documenti per ogni query
+			scriviPesi("./data/" + queryId + "_1.txt", reperimentoHITS_tmp1, N, 1);
+			scriviPesi("./data/" + queryId + "_2.txt", reperimentoHITS_tmp2, M - N, N + 1);
+			concatFile("./data/" + queryId + "_1.txt", "./data/" + queryId + "_2.txt",
+					"./data/" + queryId + ".txt");
+			new File("./data/" + queryId + "_1.txt").delete();
+			new File("./data/" + queryId + "_2.txt").delete();
+
+			reperimentoHITS_tmp1 = new HashMap<Integer, HashMap<Integer, Double>>();
+			reperimentoHITS_tmp2 = new HashMap<Integer, HashMap<Integer, Double>>();
 		}
 
-		scriviPesi("./data/tmp1.txt", reperimentoHITS_tmp1, N, 1, "prima");
-		scriviPesi("./data/tmp2.txt", reperimentoHITS_tmp2, M - N + 1, N + 1,
-				"seconda");
-		concatFile("./data/tmp1.txt", "./data/tmp2.txt", path, N, M);
-
-		// new File("./data/tmp1.txt").delete();
-		// new File("./data/tmp2.txt").delete();
-
+		FileWriter writer = new FileWriter(path);
+		Integer oldKey = 0;
+		String firstFile = "";
+		for (Integer key : keys) {
+			if(oldKey == 0) {
+				firstFile = "./data/" + key + ".txt";
+			} else {
+				concatFile(firstFile, "./data/" + key + ".txt", "./data/" + key + "_c.txt");
+				
+				new File(firstFile).delete();
+				new File("./data/" + key + ".txt").delete();
+				
+				firstFile = "./data/" + key + "_c.txt";
+			}
+			oldKey = key;
+		}
+		new File(firstFile).renameTo(new File(path));
+		
+		writer.close();
 	}
 }

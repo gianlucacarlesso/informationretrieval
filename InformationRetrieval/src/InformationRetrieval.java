@@ -45,7 +45,7 @@ public class InformationRetrieval {
 			// Recupero lo stem di tutte le keyword
 			HashMap<Integer, ArrayList<String>> stemQuery = Parser.parserQueryStem("./data/query-stem.txt");
 			int M = 1000;
-			int N =30;
+			int N =5;
 			double d = 0.10;
 			double precisionePageRank = 1.0E-14;
 			Reperimento reperimento = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
@@ -54,14 +54,14 @@ public class InformationRetrieval {
 			
 			// INIZIO LABORATORIO 4 //
 //			reperimento.eseguiRelevanceFeedback("./data/reperimentoRF.txt", docsReperiti, N, M, "./data/qrels-originale.txt");
-			
+//			
 //			RelevanceFeedback rf_esplicito = new RelevanceFeedback(keywordsQuery, docs, pesiDocs);
-//			rf_esplicito.generaNuoveQueriesRF_esplicito(docsReperiti, M, "./data/qrels-originale.txt");
+//			rf_esplicito.generaNuoveQueriesRF_esplicito(docsReperiti, M, N, "./data/qrels-originale.txt");
 //			
 //			Reperimento reperimentoRF_esplicito = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
 //			
 //			HashMap<Integer, List<Map.Entry<Integer, Double>>> docsReperitiRF_esplicito = reperimentoRF_esplicito.eseguiReperimento("./data/reperimentoEsplicito.txt", M);
-//			
+			
 //			// INIZIO LABORATORIO 5 //
 //			
 //			Reperimento reperimentoPageRank = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
@@ -70,10 +70,11 @@ public class InformationRetrieval {
 			// FINE LABORATORIO 5 //
 			
 			// INIZIO LABORATORIO 6 //
-			
-//			N = 20;
 //			Reperimento reperimentoLSA = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
-//	    	reperimentoLSA.eseguiReperimentoLSA(N, M, docsReperiti, "./data/lsa.txt", docs, keywordsQuery);
+			// Reperimento.LSA_N_FISSO ==> metodo con N fisso (Reperimento.LSA_N)
+			// Reperimento.LSA_N_DOCS_RILEVANTI ==> metodo con N riferito ai rilevanti
+			// Reperimento.LSA_N_DOCS_PESO_MAX ==> N fissato con la soglia rispetto al peso massimo (Reperimento.LSA_N_DOCS_PESO_MAX_PERCENT)
+//	    	reperimentoLSA.eseguiReperimentoLSA(M, docsReperiti, "./data/lsa.txt", docs, keywordsQuery, Reperimento.LSA_N_FISSO);
 			// FINE LABORATORIO 6 //
 			
 			// INIZIO LABORATORIO 7 //
@@ -83,10 +84,7 @@ public class InformationRetrieval {
 			// FINE LABORATORIO 7 //
 			
 			System.out.println("Fine");
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
