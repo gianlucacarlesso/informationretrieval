@@ -50,7 +50,7 @@ public class RelevanceFeedback {
 
 	public void generaNuoveQueriesRF_esplicito(
 			HashMap<Integer, List<Map.Entry<Integer, Double>>> reperimento,
-			int M, String pathQrels) throws IOException {
+			int M, int N, String pathQrels) throws IOException {
 		completaQueriesKeywordMancanti(reperimento, M);
 
 		HashMap<Integer, ArrayList<Integer>> docQrels = Parser
@@ -70,7 +70,8 @@ public class RelevanceFeedback {
 
 				Double coeffPositivo = 0.0;
 				Double coeffNegativo = 0.0;
-				for (int i = 0; i < docReperiti.size() && i < M; i++) {
+				int r = 0;
+				for (int i = 0; i < docReperiti.size() && i < N; i++) {
 					
 					// il documento i-esimo fa parte dei rilevanti?
 					if (docQrels.get(queryId)!=null && docQrels.get(queryId).contains(docReperiti.get(i).getKey())) {
@@ -81,6 +82,8 @@ public class RelevanceFeedback {
 							coeffPositivo += docs.get(docReperiti.get(i).getKey()).mieKeyword().get(key); 
 									
 						}
+						
+						r++;
 					} else {
 						if (docs.get(docReperiti.get(i).getKey()).mieKeyword()
 								.containsKey(key)) {
@@ -91,9 +94,9 @@ public class RelevanceFeedback {
 					}
 				}
 				
-				if(docQrels.get(queryId) != null) {
-					coeffPositivo /= docQrels.get(queryId).size();
-					coeffNegativo /= (M - docQrels.get(queryId).size());
+				if(docQrels.get(queryId) != null && r != 0) {
+					coeffPositivo /= r;
+					coeffNegativo /= (M - r);
 				} else {
 					coeffPositivo = 0.0;
 					coeffNegativo /= M;
