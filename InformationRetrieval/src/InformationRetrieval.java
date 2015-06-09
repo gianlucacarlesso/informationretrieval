@@ -70,17 +70,19 @@ public class InformationRetrieval {
 			// FINE LABORATORIO 5 //
 			
 			// INIZIO LABORATORIO 6 //
-//			Reperimento reperimentoLSA = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
 			// Reperimento.LSA_N_FISSO ==> metodo con N fisso (Reperimento.LSA_N)
 			// Reperimento.LSA_N_DOCS_RILEVANTI ==> metodo con N riferito ai rilevanti
 			// Reperimento.LSA_N_DOCS_PESO_MAX ==> N fissato con la soglia rispetto al peso massimo (Reperimento.LSA_N_DOCS_PESO_MAX_PERCENT)
-//	    	reperimentoLSA.eseguiReperimentoLSA(M, docsReperiti, "./data/lsa.txt", docs, keywordsQuery, Reperimento.LSA_N_FISSO);
+	    	
+//			Reperimento reperimentoLSA = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
+//			reperimentoLSA.eseguiReperimentoLSA(M, docsReperiti, "./data/lsa.txt", docs, keywordsQuery, Reperimento.LSA_N_DOCS_PESO_MAX);
 			// FINE LABORATORIO 6 //
 			
 			// INIZIO LABORATORIO 7 //
-			N = 50;
+			// Reperimento.HITS_N_FISSO ==> metodo con N fisso (Reperimento.HITS_N)
+			// Reperimento.HITS_N_DOCS_RILEVANTI ==> metodo con N riferito ai rilevanti
 			Reperimento reperimentoHITS = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
-	    	reperimentoHITS.eseguiReperimentoHITS(N, M, docsReperiti, "./data/hits.txt", docs, keywordsQuery);			
+	    	reperimentoHITS.eseguiReperimentoHITS(N, M, Reperimento.HITS_N_DOCS_RILEVANTI, docsReperiti, "./data/hits.txt", docs, keywordsQuery);			
 			// FINE LABORATORIO 7 //
 			
 			System.out.println("Fine");

@@ -22,6 +22,10 @@ public class Reperimento {
 	public static int LSA_N_DOCS_PESO_MAX = 2;
 	public static double LSA_N_DOCS_PESO_MAX_PERCENT = 10;
 
+	public static int HITS_N_FISSO = 0;
+	public static int HITS_N = 20;
+	public static int HITS_N_DOCS_RILEVANTI = 1;
+	
 	private HashMap<Integer, HashMap<String, Double>> pesiKeywordDocumenti;
 	private HashMap<Integer, HashMap<String, Double>> keywordsQuery;
 	private HashMap<Integer, ArrayList<String>> stemQuery;
@@ -442,7 +446,7 @@ public class Reperimento {
 		new File("./data/concatTmp.txt").delete();
 	}
 
-	public void eseguiReperimentoHITS(int N, int M,
+	public void eseguiReperimentoHITS(int N, int M, int versione,
 			HashMap<Integer, List<Map.Entry<Integer, Double>>> reperimento,
 			String path, HashMap<Integer, Documento> docs,
 			HashMap<Integer, HashMap<String, Double>> keywordsQuery)
@@ -457,6 +461,20 @@ public class Reperimento {
 		// Per ogni query
 		Set<Integer> keys = reperimento.keySet();
 		for (Integer queryId : keys) {
+			switch (versione) {
+			case 1:
+				HashMap<Integer, ArrayList<Integer>> docQrels = Parser
+						.parserQrels("./data/qrels-originale.txt");
+				if(docQrels.containsKey(queryId)) {
+					N = docQrels.get(queryId).size();
+				} else {
+					N = Reperimento.HITS_N;
+				}
+				break;
+			default:
+				N = HITS_N;
+			}
+			
 			// Calcolo il coefficiente dato da HITS per la query in esame
 			HashMap<Integer, Double> pesiHITS = hits
 					.calcoloPesiCentralitaAutorevolezza(queryId, N);
