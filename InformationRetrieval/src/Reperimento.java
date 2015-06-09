@@ -114,7 +114,7 @@ public class Reperimento {
 		// numero di doc rilevanti per ogni query
 		HashMap<Integer, ArrayList<Integer>> docQrels = Parser
 				.parserQrels("./data/qrels-originale.txt");
-		int documentiRilevanti = 0;
+		int documentiRilevanti = maxDocReperiti;
 
 		System.out.println(docQrels.keySet());
 		Set<Integer> queriesId = reperimento.keySet();
@@ -123,20 +123,20 @@ public class Reperimento {
 		for (Integer queryId : queriesId) {
 			// Procedo per ogni
 
-			// in qrels non ci sono tutte le query
-			if (docQrels.keySet().contains(queryId)) {
-				documentiRilevanti = docQrels.get(queryId).size();
-			} else {
-				documentiRilevanti = 20;
-			}
-			// solo per metodo 2 (N variabile)
-			if (QualeParte == "prima") {
-				maxDocReperiti = documentiRilevanti;
-				npos = 1;
-			} else if (QualeParte == "seconda") {
-				maxDocReperiti = 1000 - documentiRilevanti + 1;
-				npos = documentiRilevanti;
-			}
+//			// in qrels non ci sono tutte le query
+//			if (docQrels.keySet().contains(queryId)) {
+//				documentiRilevanti = docQrels.get(queryId).size();
+//			} else {
+//				documentiRilevanti = 20;
+//			}
+//			// solo per metodo 2 (N variabile)
+//			if (QualeParte == "prima") {
+//				maxDocReperiti = documentiRilevanti;
+//				npos = 1;
+//			} else if (QualeParte == "seconda") {
+//				maxDocReperiti = 1000 - documentiRilevanti + 1;
+//				npos = documentiRilevanti;
+//			}
 
 			Comparator<Map.Entry<Integer, Double>> comp = new Comparator<Map.Entry<Integer, Double>>() {
 
@@ -331,11 +331,11 @@ public class Reperimento {
 		// Per ogni query
 		Set<Integer> keys = reperimento.keySet();
 		for (Integer key : keys) {
-			if (docQrels.keySet().contains(key)) {
-				N = docQrels.get(key).size();
-			} else {
-				N = 20;
-			}
+			// if (docQrels.keySet().contains(key)) {
+			// N = docQrels.get(key).size();
+			// } else {
+			// N = 20;
+			// }
 
 			DoubleMatrix pesiLSA = lsa.eseguiLSA(N, key);
 			reperimentoLSA.put(key, new HashMap<Integer, Double>());
@@ -343,8 +343,9 @@ public class Reperimento {
 					.get(key);
 			for (int i = 0; i < listReperiti.size(); i++) {
 				if (i < N) {
-					System.out.println(pesiLSA.get(i,0));
-					double lsa_valore = 1+pesiLSA.get(i, 0);//Math.exp(pesiLSA.get(i, 0));
+					System.out.println(pesiLSA.get(i, 0));
+					double lsa_valore = 1 + pesiLSA.get(i, 0);// Math.exp(pesiLSA.get(i,
+																// 0));
 					reperimentoLSA.get(key).put(listReperiti.get(i).getKey(),
 							listReperiti.get(i).getValue() * lsa_valore);
 
@@ -371,12 +372,12 @@ public class Reperimento {
 		}
 
 		scriviPesi("./data/tmp1.txt", reperimentoLSA_tmp1, N, 1, "prima");
-		scriviPesi("./data/tmp2.txt", reperimentoLSA_tmp2, M - N + 1, N,
+		scriviPesi("./data/tmp2.txt", reperimentoLSA_tmp2, M - N + 1, N + 1,
 				"seconda");
-		concatFile("./data/tmp1.txt", "./data/tmp2.txt", path, N, M - N + 1);
+		concatFile("./data/tmp1.txt", "./data/tmp2.txt", path, N, M);
 
-		// new File("./data/tmp1.txt").delete();
-		// new File("./data/tmp2.txt").delete();
+		new File("./data/tmp1.txt").delete();
+		new File("./data/tmp2.txt").delete();
 
 	}
 
@@ -394,45 +395,43 @@ public class Reperimento {
 		BufferedWriter outFile = new BufferedWriter(new FileWriter(outPath));
 		String lineFile1 = "";
 		String lineFile2 = "";
-		int countFile1 = 20;
+		int countFile1 = 0;
 		int countFile2 = 0;
 		int queryEsaminata = 1;
-		int numeroDocRilevanti = 20;
+		int numeroDocRilevanti = N;
 		while ((lineFile1 = inFile1.readLine()) != null) {
 
-			if (countFile1 + 1 > numeroDocRilevanti) {
-				countFile1 = 0;
-				
-				if (docQrels.keySet().contains(queryEsaminata)) {
-					numeroDocRilevanti = docQrels.get(queryEsaminata).size();
-				} else {
-					numeroDocRilevanti = 20;
-				}
-			}
-
-			countFile1++;
-
-			outFile.write(lineFile1 + "\n");
-
 			if (countFile1 == numeroDocRilevanti) {
+
+				// if (docQrels.keySet().contains(queryEsaminata)) {
+				// numeroDocRilevanti = docQrels.get(queryEsaminata).size();
+				// } else {
+				// numeroDocRilevanti = 20;
+				// }
+
 				countFile2 = 0;
 				while ((lineFile2 = inFile2.readLine()) != null
-						&& countFile2 < (1000 - numeroDocRilevanti + 1)) {
-					countFile2++;
-
+						&& countFile2 < (M - numeroDocRilevanti)) {
+					if(countFile2+1==949)
+						countFile2 = countFile2;
 					outFile.write(lineFile2 + "\n");
+					countFile2++;
 				}
 
+				countFile1 = 0;
 				queryEsaminata = queryEsaminata + 1;
 			}
+			
+			outFile.write(lineFile1 + "\n");
+			countFile1++;
 		}
 
 		inFile1.close();
 		inFile2.close();
 		outFile.close();
 	}
-	
-	public void eseguiReperimentoHITS(int N, int M, 
+
+	public void eseguiReperimentoHITS(int N, int M,
 			HashMap<Integer, List<Map.Entry<Integer, Double>>> reperimento,
 			String path, HashMap<Integer, Documento> docs,
 			HashMap<Integer, HashMap<String, Double>> keywordsQuery)
@@ -448,18 +447,21 @@ public class Reperimento {
 		Set<Integer> keys = reperimento.keySet();
 		for (Integer queryId : keys) {
 			// Calcolo il coefficiente dato da HITS per la query in esame
-			HashMap<Integer, Double> pesiHITS = hits.calcoloPesiCentralitaAutorevolezza(queryId, N);
-			
+			HashMap<Integer, Double> pesiHITS = hits
+					.calcoloPesiCentralitaAutorevolezza(queryId, N);
+
 			reperimentoHITS.put(queryId, new HashMap<Integer, Double>());
 			List<Map.Entry<Integer, Double>> listReperiti = reperimento
 					.get(queryId);
-			
+
 			for (int i = 0; i < listReperiti.size(); i++) {
 				if (i < N) {
 					// Recupero il coefficiente dato da hits per i primi N doc
-					double hits_valore = 1 + pesiHITS.get(listReperiti.get(i).getKey());
-					
-					reperimentoHITS.get(queryId).put(listReperiti.get(i).getKey(),
+					double hits_valore = 1 + pesiHITS.get(listReperiti.get(i)
+							.getKey());
+
+					reperimentoHITS.get(queryId).put(
+							listReperiti.get(i).getKey(),
 							listReperiti.get(i).getValue() * hits_valore);
 
 					if (!reperimentoHITS_tmp1.containsKey(queryId)) {
@@ -470,7 +472,8 @@ public class Reperimento {
 							listReperiti.get(i).getKey(),
 							listReperiti.get(i).getValue() * hits_valore);
 				} else {
-					reperimentoHITS.get(queryId).put(listReperiti.get(i).getKey(),
+					reperimentoHITS.get(queryId).put(
+							listReperiti.get(i).getKey(),
 							listReperiti.get(i).getValue());
 
 					if (!reperimentoHITS_tmp2.containsKey(queryId)) {
@@ -485,12 +488,12 @@ public class Reperimento {
 		}
 
 		scriviPesi("./data/tmp1.txt", reperimentoHITS_tmp1, N, 1, "prima");
-		scriviPesi("./data/tmp2.txt", reperimentoHITS_tmp2, M - N + 1, N,
+		scriviPesi("./data/tmp2.txt", reperimentoHITS_tmp2, M - N + 1, N + 1,
 				"seconda");
-		concatFile("./data/tmp1.txt", "./data/tmp2.txt", path, N, M - N + 1);
+		concatFile("./data/tmp1.txt", "./data/tmp2.txt", path, N, M);
 
-		new File("./data/tmp1.txt").delete();
-		new File("./data/tmp2.txt").delete();
+		// new File("./data/tmp1.txt").delete();
+		// new File("./data/tmp2.txt").delete();
 
 	}
 }
