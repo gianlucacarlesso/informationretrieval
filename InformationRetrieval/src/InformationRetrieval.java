@@ -53,14 +53,14 @@ public class InformationRetrieval {
 			// FINE LABORATORIO 3 //
 			
 			// INIZIO LABORATORIO 4 //
-			reperimento.eseguiRelevanceFeedback("./data/reperimentoRF.txt", docsReperiti, N, M, "./data/qrels-originale.txt");
-			
-			RelevanceFeedback rf_esplicito = new RelevanceFeedback(keywordsQuery, docs, pesiDocs);
-			rf_esplicito.generaNuoveQueriesRF_esplicito(docsReperiti, M, N, "./data/qrels-originale.txt");
-			
-			Reperimento reperimentoRF_esplicito = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
-			
-			HashMap<Integer, List<Map.Entry<Integer, Double>>> docsReperitiRF_esplicito = reperimentoRF_esplicito.eseguiReperimento("./data/reperimentoEsplicito.txt", M);
+//			reperimento.eseguiRelevanceFeedback("./data/reperimentoRF.txt", docsReperiti, N, M, "./data/qrels-originale.txt");
+//			
+//			RelevanceFeedback rf_esplicito = new RelevanceFeedback(keywordsQuery, docs, pesiDocs);
+//			rf_esplicito.generaNuoveQueriesRF_esplicito(docsReperiti, M, N, "./data/qrels-originale.txt");
+//			
+//			Reperimento reperimentoRF_esplicito = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
+//			
+//			HashMap<Integer, List<Map.Entry<Integer, Double>>> docsReperitiRF_esplicito = reperimentoRF_esplicito.eseguiReperimento("./data/reperimentoEsplicito.txt", M);
 			
 //			// INIZIO LABORATORIO 5 //
 //			
@@ -71,9 +71,10 @@ public class InformationRetrieval {
 			
 			// INIZIO LABORATORIO 6 //
 			
-//			N = 20;
-//			Reperimento reperimentoLSA = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
-//	    	reperimentoLSA.eseguiReperimentoLSA(N, M, docsReperiti, "./data/lsa.txt", docs, keywordsQuery);
+			N = 20;
+			int percentuale = 20;
+			Reperimento reperimentoLSA = new Reperimento(pesiDocs, keywordsQuery, stemQuery, docs);
+	    	reperimentoLSA.eseguiReperimentoLSA(N, M, percentuale,docsReperiti, "./data/lsa.txt", docs, keywordsQuery);
 			// FINE LABORATORIO 6 //
 			
 			// INIZIO LABORATORIO 7 //
@@ -84,6 +85,9 @@ public class InformationRetrieval {
 			
 			System.out.println("Fine");
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
